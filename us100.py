@@ -3,8 +3,6 @@ import time
 import serial
 import subprocess
 import os
-
-
 os.system("sudo systemctl stop serial-getty@ttyS2.service")
 uart_2=serial.Serial("/dev/ttyS2",baudrate=9600,timeout=2)
 uart_4=serial.Serial("/dev/ttyS4",baudrate=9600,timeout=2)
