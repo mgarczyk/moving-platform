@@ -1,3 +1,4 @@
+ Linux git instrukcja:
  Wrzucanie:
  1) Wrzucasz pliczek do moving_platform
  2) git branch -M "nazwa" (domyslnie main)
