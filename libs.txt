@@ -1,3 +1,5 @@
 adafruit-circuitpython-us100
 adafruit-circuitpython-tfmini
 python-periphery
+time
+os
