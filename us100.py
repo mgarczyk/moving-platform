@@ -4,8 +4,8 @@ import serial
 import subprocess
 import os
 os.system("systemctl stop serial-getty@ttyS2.service")
-uart_2=serial.Serial("/dev/ttyS2",baudrate=9600,timeout=2)
-uart_4=serial.Serial("/dev/ttyS4",baudrate=9600,timeout=2)
+uart_2=serial.Serial("/dev/ttyS2",baudrate=9600,timeout=1)
+uart_4=serial.Serial("/dev/ttyS4",baudrate=9600,timeout=1)
 while True:
     uart_2_speed = subprocess.getoutput("sudo stty -F /dev/ttyS2 speed")
     uart_4_speed = subprocess.getoutput("sudo stty -F /dev/ttyS4 speed")
