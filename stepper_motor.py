@@ -21,8 +21,6 @@ def Stepper_motor(Direction):
             except IOError:
                 print("IOErr")
                 break
-def main():
-    Stepper_motor(1) #1 for CW - clockwise 0 for counterclockwise
 
-if __name__ == __main__:
-    main()
+if __name__ == "__main__":
+     Stepper_motor(1) #1 for CW - clockwise 0 for counterclockwise
