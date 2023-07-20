@@ -25,8 +25,8 @@ def subscribe(client: mqtt_client, topic):
     client.on_message = on_message
 
 def run():
-    client = connect_mqtt(client_id, broker, port)
-    subscribe(client, topic)
+    client = connect_mqtt()
+    subscribe(client)
     client.loop_forever()
 
 if __name__ == '__main__':
