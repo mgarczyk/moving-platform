@@ -4,7 +4,7 @@ from paho.mqtt import client as mqtt_client
 broker = 'localhost'
 port = 1883
 topic = "/home/radxa/moving_platform/mqtt/test"
-client_id = 'android_client' #f'subscribe-{random.randint(0, 100)}'
+client_id = f'subscribe-{random.randint(0, 100)}'
 
 
 def connect_mqtt() -> mqtt_client:
