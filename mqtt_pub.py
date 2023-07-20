@@ -24,12 +24,16 @@ def publish(client, topic, message):
         print(f"Failed to send message to topic {topic}")
 
 
-def run():
-    client = connect_mqtt()
+def run(client_id, broker, port, topic):
+    client = connect_mqtt(client_id, broker, port)
     client.loop_start()
-    publish(client, "mess")
+    publish(client, topic, "Message")
     client.loop_stop()
 
-
 if __name__ == '__main__':
-    run()
+    client_id = f'subscribe-distance'
+    broker = 'localhost'
+    port = 1883
+    topic = "/home/radxa/moving_platform/mqtt/us100"
+    run(client_id, broker, port, topic)
+
