@@ -1,7 +1,6 @@
 from paho.mqtt import client as mqtt_client
 import time
 
-
 def connect_mqtt(client_id, broker, port):
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -27,7 +26,6 @@ def run():
     client.loop_start()
     publish(client, "mess")
     client.loop_stop()
-
 
 if __name__ == '__main__':
     run()
