@@ -3,7 +3,7 @@ import time
 import serial
 import subprocess
 import os
-os.system("systemctl stop serial-getty@ttyS2.service")
+os.system("systemctl stop serial-getty@ttyS2.service") #turn off debbuger on UART2
 uart_2=serial.Serial("/dev/ttyS2",baudrate=9600,timeout=1)
 uart_4=serial.Serial("/dev/ttyS4",baudrate=9600,timeout=1)
 while True:
