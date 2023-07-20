@@ -6,10 +6,11 @@ Dir_Pin=74
 Step_GPIO=GPIO(Step_Pin,"out")
 Dir_GPIO=GPIO(Dir_Pin,"out")
 Direction=True
+
 def Stepper_motor(Direction):
     Dir_GPIO.write(Direction)
-    for y in range (10):
-        for x in range (200):
+    for rotation in range (10):
+        for step in range (200):
             try:
                 Step_GPIO.write(True)
                 time.sleep(0.005)
@@ -21,5 +22,6 @@ def Stepper_motor(Direction):
             except IOError:
                 print("IOErr")
                 break
+            
 if __name__ == "__main__":
      Stepper_motor(True) #1 for CW - clockwise 0 for counterclockwise
