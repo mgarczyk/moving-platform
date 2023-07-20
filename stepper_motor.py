@@ -13,9 +13,9 @@ def Stepper_motor(Direction):
         for step in range (200):
             try:
                 Step_GPIO.write(True)
-                time.sleep(0.005)
+                time.sleep(0.01)
                 Step_GPIO.write(False)
-                time.sleep(0.005)
+                time.sleep(0.01)
             except KeyboardInterrupt:
                 Step_GPIO.write(False)
                 break
