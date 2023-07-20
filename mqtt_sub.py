@@ -18,10 +18,14 @@ def subscribe(client: mqtt_client, topic):
     client.subscribe(topic)
     client.on_message = on_message
 
-def run():
-    client = connect_mqtt()
-    subscribe(client)
+def run(client_id, broker, port, topic):
+    client = connect_mqtt(client_id, broker, port)
+    subscribe(client, topic)
     client.loop_forever()
 
 if __name__ == '__main__':
-    run()
+    client_id = f'subscribe-distance'
+    broker = 'localhost'
+    port = 1883
+    topic = "/home/radxa/moving_platform/mqtt/us100"
+    run(client_id, broker, port, topic)
