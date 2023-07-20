@@ -1,12 +1,6 @@
 import random
 from paho.mqtt import client as mqtt_client
 
-#Uncomment to use this script as subscriber 
-#broker = 'localhost'
-#port = 1883
-#topic = "/home/radxa/moving_platform/mqtt/distance"
-#client_id = f'subscribe-distance'
-
 def connect_mqtt(client_id, broker, port) -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
