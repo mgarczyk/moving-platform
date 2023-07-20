@@ -4,7 +4,7 @@ import time
 
 broker = 'localhost'
 port = 1883
-topic = "/home/radxa/mqtt"
+topic = "/home/radxa/moving_platfrom/mqtt/test"
 # Generate a Client ID with the publish prefix.
 client_id = f'publish-{random.randint(0, 1000)}'
 
