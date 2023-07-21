@@ -9,13 +9,13 @@ Direction=True
 
 def Stepper_motor(Direction):
     Dir_GPIO.write(Direction)
-    for rotation in range (10):
+    for rotation in range (100):
         for step in range (200):
             try:
                 Step_GPIO.write(True)
-                time.sleep(0.01)
+                time.sleep(0.005)
                 Step_GPIO.write(False)
-                time.sleep(0.01)
+                time.sleep(0.005)
             except KeyboardInterrupt:
                 Step_GPIO.write(False)
                 break
@@ -24,4 +24,4 @@ def Stepper_motor(Direction):
                 break
             
 if __name__ == "__main__":
-     Stepper_motor(True) #1 for CW - clockwise 0 for counterclockwise
+     Stepper_motor(False) #1 for CW - clockwise 0 for counterclockwise
