@@ -24,8 +24,8 @@ def run(client_id, broker, port, topic):
     client.loop_forever()
 
 if __name__ == '__main__':
-    client_id = f'subscribe-distance'
+    client_id = f'subscribe-manual'
     broker = 'localhost'
     port = 1883
-    topic = "/home/radxa/moving_platform/mqtt/us100"
+    topic = "/home/radxa/moving_platform/mqtt/manual"
     run(client_id, broker, port, topic)
