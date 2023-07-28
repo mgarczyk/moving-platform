@@ -12,15 +12,22 @@ def connect_mqtt(client_id, broker, port) -> mqtt_client:
     client.connect(broker, port)
     return client
 
-def subscribe(client: mqtt_client, topic):
+def subscribe_text(client: mqtt_client, topic):
     def on_message(client, userdata, msg):
         print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
     client.subscribe(topic)
     client.on_message = on_message
 
+def subscribe_image(client: mqtt_client, topic):
+    def on_message(client, userdata, msg):
+        print(f"Received `{msg.payload}` from `{msg.topic}` topic")
+        open("opencv_sub.jpg", "wb").write(msg.payload)
+    client.subscribe(topic)
+    client.on_message = on_message
+
 def run(client_id, broker, port, topic):
     client = connect_mqtt(client_id, broker, port)
-    subscribe(client, topic)
+    subscribe_text(client, topic)
     client.loop_forever()
 
 if __name__ == '__main__':
