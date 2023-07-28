@@ -9,4 +9,5 @@
  Dodatkowo kopiowanie repo: git clone https://gitlab.com/pit_/moving_platform
  Zrzucanie:  
  1) git pull
+ test
 
