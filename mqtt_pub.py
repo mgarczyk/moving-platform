@@ -34,6 +34,6 @@ if __name__ == '__main__':
     client_id = f'subscribe-distance'
     broker = 'localhost'
     port = 1883
-    topic = "/home/radxa/moving_platform/mqtt/test"
+    topic = "testtopic/1"
     run(client_id, broker, port, topic)
 
