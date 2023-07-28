@@ -2,4 +2,5 @@ adafruit-circuitpython-us100
 adafruit-circuitpython-tfmini
 adafruit-circuitpython-rplidar
 python-periphery
+opencv-python
 paho-mqtt
