@@ -3,3 +3,6 @@ bin/
 mqtt/
 .vscode/
 lidar_data/
+camera/
+__pycache__/
+.venv/
