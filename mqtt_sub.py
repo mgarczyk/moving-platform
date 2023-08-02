@@ -20,7 +20,6 @@ def subscribe_text(client: mqtt_client, topic):
 
 def subscribe_image(client: mqtt_client, topic):
     def on_message(client, userdata, msg):
-        print(f"Received `{msg.payload}` from `{msg.topic}` topic")
         open("opencv_sub.jpg", "wb").write(msg.payload)
     client.subscribe(topic)
     client.on_message = on_message
