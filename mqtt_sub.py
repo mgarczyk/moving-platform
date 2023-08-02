@@ -14,7 +14,7 @@ def connect_mqtt(client_id, broker, port) -> mqtt_client:
 
 def subscribe_text(client: mqtt_client, topic):
     def on_message(client, userdata, msg):
-        print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        print(msg.payload.decode())
     client.subscribe(topic)
     client.on_message = on_message
 
@@ -31,8 +31,8 @@ def run(client_id, broker, port, topic):
     client.loop_forever()
 
 if __name__ == '__main__':
-    client_id = f'subscribe-manual'
+    client_id = "X"
     broker = 'localhost'
     port = 1883
-    topic = "/home/radxa/moving_platform/mqtt/test"
+    topic = "mqtt/steering"
     run(client_id, broker, port, topic)

@@ -34,6 +34,6 @@ if __name__ == '__main__':
     client_id = f'subscribe-distance'
     broker = 'localhost'
     port = 1883
-    topic = "testtopic/1"
+    topic = "mqtt/steering"
     run(client_id, broker, port, topic)
 
