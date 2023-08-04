@@ -1,8 +1,7 @@
 from paho.mqtt import client as mqtt_client
 import time
 
-
-def connect_mqtt(client_id, broker, port):
+def connect_mqtt(client_id : str, broker : str, port : int ):
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             print("Connected to MQTT Broker!")
@@ -13,8 +12,7 @@ def connect_mqtt(client_id, broker, port):
     client.connect(broker, port)
     return client
 
-
-def publish(client, topic, message):
+def publish(client : str, topic : str, message):
     time.sleep(1)
     result = client.publish(topic, message)
     status = result[0]
@@ -23,17 +21,17 @@ def publish(client, topic, message):
     else:
         print(f"Failed to send message to topic {topic}")
 
+#Use code below to test pub<->sub communcation.
 
-def run(client_id, broker, port, topic):
+def test_run(client_id : str, broker : str, port : int , topic):
     client = connect_mqtt(client_id, broker, port)
-    client.loop_start()
-    publish(client, topic, "Message")
-    client.loop_stop()
+    while True:
+        publish(client, topic, "Message")
 
 if __name__ == '__main__':
-    client_id = f'subscribe-distance'
+    client_id = f'subscribe-test'
     broker = 'localhost'
     port = 1883
-    topic = "mqtt/steering"
-    run(client_id, broker, port, topic)
+    topic = "mqtt/test"
+    test_run(client_id, broker, port, topic)
 
