@@ -1,7 +1,8 @@
 import random
 from paho.mqtt import client as mqtt_client
+import paho.mqtt.subscribe as subscribe
 
-def connect_mqtt(client_id, broker, port) -> mqtt_client:
+def connect_mqtt(client_id : str, broker : str, port : int) -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             print("Connected to MQTT Broker!")
@@ -12,27 +13,29 @@ def connect_mqtt(client_id, broker, port) -> mqtt_client:
     client.connect(broker, port)
     return client
 
-def subscribe_text(client: mqtt_client, topic):
-    def on_message(client, userdata, msg):
-         print(f"Received `{msg.payload}` from `{msg.topic}` topic")
-    client.subscribe(topic)
-    client.on_message = on_message
+def subscribe_return_text(client: mqtt_client, topic : str):
+    while True:
+        msg = subscribe.simple(topic, hostname="localhost")
+        return msg.payload.decode('utf-8')
 
-def subscribe_image(client: mqtt_client, topic):
+def subscribe_save_image(client: mqtt_client, topic : str):
     def on_message(client, userdata, msg):
         print(f"Received `{msg.payload}` from `{msg.topic}` topic")
         open("opencv_sub.jpg", "wb").write(msg.payload)
     client.subscribe(topic)
     client.on_message = on_message
 
-def run(client_id, broker, port, topic):
-    client = connect_mqtt(client_id, broker, port)
-    subscribe_text(client, topic)
-    client.loop_forever()
+#Use code below to test pub<->sub communcation.
 
+def test_run(client_id : mqtt_client, broker : str, port: int, topic: str):
+    client = connect_mqtt(client_id, broker, port)
+    while True:
+        msg = subscribe.simple(topic, hostname="localhost")
+        print("%s %s" % (msg.topic, msg.payload))
+    
 if __name__ == '__main__':
-    client_id = "X"
+    client_id = "publish-test"
     broker = 'localhost'
     port = 1883
-    topic = "mqtt/steering"
-    run(client_id, broker, port, topic)
+    topic = "mqtt/test"
+    test_run(client_id, broker, port, topic)
