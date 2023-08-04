@@ -14,9 +14,8 @@ def connect_mqtt(client_id : str, broker : str, port : int) -> mqtt_client:
     return client
 
 def subscribe_return_text(client: mqtt_client, topic : str):
-    while True:
-        msg = subscribe.simple(topic, hostname="localhost")
-        return msg.payload.decode('utf-8')
+    msg = subscribe.simple(topic, hostname="localhost")
+    return msg.payload.decode('utf-8')
 
 def subscribe_save_image(client: mqtt_client, topic : str):
     def on_message(client, userdata, msg):
