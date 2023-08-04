@@ -14,7 +14,7 @@ MUX_GPIO_B=GPIO(MUX_PIN_B,"out")
 ##BROKER##
 broker = 'localhost'
 port = 1883
-topic = "/home/radxa/moving_platform/mqtt/us100"
+topic = "/mqtt/us100"
 client_id = f'publish-distance'
 
 def Sensors(VAR_A,VAR_B):     
