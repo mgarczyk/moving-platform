@@ -26,14 +26,17 @@ def on_message(client, userdata, msg):
 def pwm_set_turn():
        pwm_R.duty_cycle = 0.5
        pwm_L.duty_cycle = 0.5
-def pwm_set():
-   # if soft_start==True:
-    #   pwm_R.duty_cycle = 0.75
-     #   pwm_L.duty_cycle = 0.75
-      #  time.sleep(0.25)
 
-       # soft_start=False
-   # else:   
+def pwm_set():
+    if soft_start == True:
+        pwm_R.duty_cycle = 0.75
+        pwm_L.duty_cycle = 0.75
+        time.sleep(0.25)
+        pwm_R.duty_cycle = 0.5
+        pwm_L.duty_cycle = 0.5
+        time.sleep(0.25)
+        soft_start=False
+    else:   
         pwm_R.duty_cycle = 0.25
         pwm_L.duty_cycle = 0.25
 
