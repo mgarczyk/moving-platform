@@ -30,11 +30,11 @@ def publisher_us100():
     client = mqtt_pub.connect_mqtt(client_id, broker, port)
     while True:
         try:
-            x1=Sensors(False,False)
+            x1=Sensors(False,True)
             mqtt_pub.publish(client, topic, f'x1: {x1}')
-            x2=Sensors(False,True)
+            x2=Sensors(True,False)
             mqtt_pub.publish(client, topic, f'x2: {x2}')
-            x3=Sensors(True,False)
+            x3=Sensors(False,False)
             mqtt_pub.publish(client, topic, f'x3: {x3}')
             x4=Sensors(True,True)
             mqtt_pub.publish(client, topic, f'x4: {x4}')

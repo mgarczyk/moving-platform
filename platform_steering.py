@@ -3,17 +3,19 @@ import periphery
 import paho.mqtt.client as mqtt
 import os
 
-
 pwm_R = periphery.PWM(0, 0)
 pwm_L = periphery.PWM(1, 0)
 Dir_L_GPIO=periphery.GPIO(71,"out")
 Dir_R_GPIO=periphery.GPIO(72,"out")
+Dir_LIFT_GPIO=periphery.GPIO(157,"out")
+PWM_LIFT_GPIO=periphery.GPIO(42,"out")
+
 pwm_R.frequency=1e3
 pwm_L.frequency=1e3
 pwm_L.enable()
 pwm_R.enable()
-data = -1
 
+data = -1
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -28,19 +30,17 @@ def pwm_set_turn():
        pwm_L.duty_cycle = 0.5
 
 def pwm_set():
-    if soft_start == True:
-        pwm_R.duty_cycle = 0.75
-        pwm_L.duty_cycle = 0.75
-        time.sleep(0.25)
-        pwm_R.duty_cycle = 0.5
-        pwm_L.duty_cycle = 0.5
-        time.sleep(0.25)
-        soft_start=False
-    else:   
+    #if soft_start == True:
+    #    pwm_R.duty_cycle = 0.75
+    #    pwm_L.duty_cycle = 0.75
+    #    time.sleep(0.25)
+    #    pwm_R.duty_cycle = 0.5
+    #    pwm_L.duty_cycle = 0.5
+    #    time.sleep(0.25)
+    #    soft_start=False
+   # else:   
         pwm_R.duty_cycle = 0.25
         pwm_L.duty_cycle = 0.25
-
-
 
 def forward():
     Dir_L_GPIO.write(False)
@@ -65,32 +65,37 @@ def right():
 def stop():
     pwm_R.duty_cycle = 1.0
     pwm_L.duty_cycle = 1.0
- 
+    PWM_LIFT_GPIO.write(False)
+    
+def lift():
+    Dir_LIFT_GPIO.write(True)
+    PWM_LIFT_GPIO.write(True)
+
+def lower():
+    Dir_LIFT_GPIO.write(False)
+    PWM_LIFT_GPIO.write(True)
 
 if __name__ == '__main__':
     client = mqtt.Client()
     client.on_connect = on_connect
     client.connect("localhost", 1883)
-    soft_start=True
+
     while True:
         client.on_message = on_message
         client.loop_start()
-        i=0
-    
         while data=="Forward":
-            print(data)
             forward()
         while data=="Back":
-            print(data)
             back()
         while data=="Left":
-            print(data)
             left()
         while data=="Right":
-            print(data)
             right()
+        while data=="Lower":
+            lower()
+        while data=="Lift":
+            lift()
         else:
-            print(data)
             stop()
             soft_start=True
         time.sleep(0.25)
