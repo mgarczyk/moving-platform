@@ -14,7 +14,7 @@ pwm_R.frequency=1e3
 pwm_L.frequency=1e3
 pwm_L.enable()
 pwm_R.enable()
-
+flag=True
 data = -1
 
 def on_connect(client, userdata, flags, rc):
@@ -28,6 +28,7 @@ def on_message(client, userdata, msg):
 def pwm_set_turn():
        pwm_R.duty_cycle = 0.5
        pwm_L.duty_cycle = 0.5
+       flag=False
 
 def pwm_set():
     #if soft_start == True:
@@ -41,6 +42,7 @@ def pwm_set():
    # else:   
         pwm_R.duty_cycle = 0.25
         pwm_L.duty_cycle = 0.25
+        flag=False
 
 def forward():
     Dir_L_GPIO.write(False)
@@ -66,6 +68,7 @@ def stop():
     pwm_R.duty_cycle = 1.0
     pwm_L.duty_cycle = 1.0
     PWM_LIFT_GPIO.write(False)
+    flag=True
     
 def lift():
     Dir_LIFT_GPIO.write(True)
@@ -92,9 +95,11 @@ if __name__ == '__main__':
         while data=="Right":
             right()
         while data=="Lower":
-            lower()
+            if flag==True:
+                lower()
         while data=="Lift":
-            lift()
+            if flag==True: 
+                lift()
         else:
             stop()
             soft_start=True

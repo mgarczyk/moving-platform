@@ -6,8 +6,8 @@ import serial
 import os
 
 ##MUX PINOUT##
-MUX_PIN_A=71
-MUX_PIN_B=72
+MUX_PIN_A=154
+MUX_PIN_B=156
 MUX_GPIO_A=GPIO(MUX_PIN_A,"out")
 MUX_GPIO_B=GPIO(MUX_PIN_B,"out")
 
@@ -24,12 +24,31 @@ def Sensors(VAR_A,VAR_B):
     time.sleep(0.001)    
     us100=adafruit_us100.US100(UART_US100)
     distance=us100.distance
+    print(distance)
     return(distance)
 
 def publisher_us100():
     client = mqtt_pub.connect_mqtt(client_id, broker, port)
     while True:
         try:
+            x1=Sensors(False,True)
+            mqtt_pub.publish(client, topic, f'x1: {x1}')
+            x2=Sensors(True,False)
+            mqtt_pub.publish(client, topic, f'x2: {x2}')
+            x3=Sensors(False,False)
+            mqtt_pub.publish(client, topic, f'x3: {x3}')
+            x4=Sensors(True,True)
+            mqtt_pub.publish(client, topic, f'x4: {x4}')
+        except KeyboardInterrupt:
+            MUX_GPIO_A.write(False)
+            MUX_GPIO_B.write(False)
+            break
+
+def publisher_us100():
+    client = mqtt_pub.connect_mqtt(client_id, broker, port)
+    while True:
+        try:
+            
             x1=Sensors(False,True)
             mqtt_pub.publish(client, topic, f'x1: {x1}')
             x2=Sensors(True,False)

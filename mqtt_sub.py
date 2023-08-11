@@ -29,7 +29,7 @@ def test_run(client_id : mqtt_client, broker : str, port: int, topic: str):
     client = connect_mqtt(client_id, broker, port)
     while True:
         msg = subscribe.simple(topic, hostname="localhost")
-        print("%s %s" % (msg.topic, msg.payload))
+        print(msg.payload)
     
 if __name__ == '__main__':
     client_id = "publish-test"
