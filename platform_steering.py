@@ -10,8 +10,8 @@ Dir_R_GPIO=periphery.GPIO(72,"out")
 Dir_LIFT_GPIO=periphery.GPIO(157,"out")
 PWM_LIFT_GPIO=periphery.GPIO(42,"out")
 
-pwm_R.frequency=1e3
-pwm_L.frequency=1e3
+#pwm_R.frequency=1e3
+#pwm_L.frequency=1e3
 pwm_L.enable()
 pwm_R.enable()
 flag=True
