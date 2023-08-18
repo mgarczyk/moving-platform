@@ -36,8 +36,8 @@ try:
     while True:
         encoder1_speed = read_encoder_speed(encoder1_gpio_a, encoder1_gpio_b)
         encoder2_speed = read_encoder_speed(encoder2_gpio_a, encoder2_gpio_b)
-        print("Encoder 1: Prędkość =", encoder1_speed, "zmian/sek")
-        print("Encoder 2: Prędkość =", encoder2_speed, "zmian/sek")
+        print("Encoder 1: Prędkość =", encoder1_speed, "obrotów/sek")
+        print("Encoder 2: Prędkość =", encoder2_speed, "obrotów/sek")
 
 except KeyboardInterrupt:
     pass
