@@ -1,4 +1,7 @@
 import time
+import math
+import mqtt_pub
+import mqtt_sub
 from periphery import GPIO
 
 # Ustawienie numerów pinów GPIO, do których są podłączone enkodery
@@ -8,10 +11,10 @@ ENCODER2_PIN_A = 76
 ENCODER2_PIN_B = 73
 
 # Inicjalizacja obiektów GPIO
-encoder1_gpio_a = GPIO(ENCODER1_PIN_A, "in")
-encoder1_gpio_b = GPIO(ENCODER1_PIN_B, "in")
-encoder2_gpio_a = GPIO(ENCODER2_PIN_A, "in")
-encoder2_gpio_b = GPIO(ENCODER2_PIN_B, "in")
+encoder_right_a = GPIO(ENCODER1_PIN_A, "in")
+encoder_right_b = GPIO(ENCODER1_PIN_B, "in")
+encoder_left_a = GPIO(ENCODER2_PIN_A, "in")
+encoder_left_b = GPIO(ENCODER2_PIN_B, "in")
 
 # Funkcja do odczytu prędkości enkodera
 def read_encoder_speed(gpio_a, gpio_b):
@@ -29,21 +32,23 @@ def read_encoder_speed(gpio_a, gpio_b):
         elapsed_time = time.time() - start_time
         if elapsed_time >= 1.0:  # Odczytuj prędkość co 1 sekundę
             encoder_speed = change_count / elapsed_time
-            return encoder_speed /(48*99)
+            robot_velocity = round((encoder_speed /(48*99)) * 2 * math.pi * 0.06, 2) #dzielimy odczyt przez częstotliwość impulsu mnożoną razy przekładnię. 2*pi*r jako obwód koła, co daje nam przejechaną drogę oraz prędkość.
+            return robot_velocity
 
 # Główna pętla programu
+client = mqtt_pub.connect_mqtt("encoder", "localhost", 1883)
 try:
     while True:
-        encoder1_speed = read_encoder_speed(encoder1_gpio_a, encoder1_gpio_b)
-        encoder2_speed = read_encoder_speed(encoder2_gpio_a, encoder2_gpio_b)
-        print("Encoder 1: Prędkość =", encoder1_speed, "obrotów/sek")
-        print("Encoder 2: Prędkość =", encoder2_speed, "obrotów/sek")
-
+        encoder_right_speed = read_encoder_speed(encoder_right_a, encoder_right_b)
+        encoder_left_speed = read_encoder_speed(encoder_left_a, encoder_left_b)
+        mqtt_pub.publish(client, "mqtt/speed", encoder_right_speed + "m/s")
+        print("Encoder right: Prędkość =", encoder_right_speed, "m/s")
+        print("Encoder left: Prędkość =", encoder_left_speed, "m/s")
 except KeyboardInterrupt:
     pass
 
 # Zakończenie programu
-encoder1_gpio_a.close()
-encoder1_gpio_b.close()
-encoder2_gpio_a.close()
-encoder2_gpio_b.close()
+encoder_right_a.close()
+encoder_left_a.close()
+encoder_right_b.close()
+encoder_left_a.close()
