@@ -24,4 +24,4 @@ def photo_to_MQTT(broker, port, client_id, topic, camera_id):
         time.sleep(5)
         
 if __name__ == "__main__":
-    photo_to_MQTT("localhost", 1883, "rockPi", "camera/photo", 0)
+    photo_to_MQTT("localhost", 1883, "rockPi", "mqtt/camera", 0)
