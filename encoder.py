@@ -41,9 +41,9 @@ try:
     while True:
         encoder_right_speed = read_encoder_speed(encoder_right_a, encoder_right_b)
         encoder_left_speed = read_encoder_speed(encoder_left_a, encoder_left_b)
-        mqtt_pub.publish(client, "mqtt/speed", encoder_right_speed + "m/s")
-        print("Encoder right: Prędkość =", encoder_right_speed, "m/s")
-        print("Encoder left: Prędkość =", encoder_left_speed, "m/s")
+        mqtt_pub.publish(client, "mqtt/speed", encoder_right_speed)
+        #print("Encoder right: Prędkość =" + encoder_right_speed +  "m/s")
+        #print("Encoder left: Prędkość ="+ encoder_left_speed +  "m/s")
 except KeyboardInterrupt:
     pass
 
