@@ -28,13 +28,13 @@ def subscribe_text_loop(client: mqtt_client, topic : str):
         print(msg.payload)
     client.subscribe(topic)
     client.on_message = on_message
+    client.loop_forever()
 
 #Use code below to test pub<->sub communcation.
 
 def test_run(client_id : mqtt_client, broker : str, port: int, topic: str):
     client = connect_mqtt(client_id, broker, port)
     subscribe_text_loop(client, topic)
-    client.loop_forever()
     
 if __name__ == '__main__':
     client_id = "subscribe-test"
