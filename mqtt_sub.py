@@ -14,7 +14,7 @@ def connect_mqtt(client_id : str, broker : str, port : int) -> mqtt_client:
     return client
 
 def subscribe_return_text(client: mqtt_client, topic : str):
-    msg = subscribe.simple(topic, hostname="localhost")
+    msg = subscribe.simple(topic, hostname='localhost')
     return msg.payload.decode('utf-8')
 
 def subscribe_save_image(client: mqtt_client, topic : str):
@@ -23,17 +23,26 @@ def subscribe_save_image(client: mqtt_client, topic : str):
     client.subscribe(topic)
     client.on_message = on_message
 
+def subscribe_text_loop(client: mqtt_client, topic : str):
+    def on_message(client, userdata, msg):
+        print(msg.payload)
+    client.subscribe(topic)
+    client.on_message = on_message
+
 #Use code below to test pub<->sub communcation.
 
 def test_run(client_id : mqtt_client, broker : str, port: int, topic: str):
     client = connect_mqtt(client_id, broker, port)
-    while True:
-        msg = subscribe.simple(topic)
-        print(msg.payload)
+    subscribe_text_loop(client, topic)
+    client.loop_forever()
     
 if __name__ == '__main__':
     client_id = "subscribe-test"
     broker = 'localhost'
-    port = 1883
-    topic = "mqtt/test"
-    test_run(client_id, broker, port, topic)
+    port = 8883
+    topic = "mqtt/steering"
+    try:
+        test_run(client_id, broker, port, topic)
+    except KeyboardInterrupt:
+        print("Connection ended")
+        exit()

@@ -25,13 +25,19 @@ def publish(client : str, topic : str, message):
 
 def test_run(client_id : str, broker : str, port : int , topic):
     client = connect_mqtt(client_id, broker, port)
+    i = 0
     while True:
-        publish(client, topic, "Message")
+        i+=1
+        publish(client, topic, i)
 
 if __name__ == '__main__':
-    client_id = f'publish-test'
+    client_id = "publish-test"
     broker = 'localhost'
-    port = 1883
-    topic = "mqtt/test"
-    test_run(client_id, broker, port, topic)
+    port = 8883
+    topic = "mqtt/speed"
+    try:
+        test_run(client_id, broker, port, topic)
+    except KeyboardInterrupt:
+        print("Connection ended")
+        exit()
 
