@@ -28,11 +28,11 @@ def subscribe_save_image(client: mqtt_client, topic : str):
 def test_run(client_id : mqtt_client, broker : str, port: int, topic: str):
     client = connect_mqtt(client_id, broker, port)
     while True:
-        msg = subscribe.simple(topic, hostname="localhost")
+        msg = subscribe.simple(topic)
         print(msg.payload)
     
 if __name__ == '__main__':
-    client_id = "publish-test"
+    client_id = "subscribe-test"
     broker = 'localhost'
     port = 1883
     topic = "mqtt/test"

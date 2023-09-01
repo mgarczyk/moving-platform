@@ -29,7 +29,7 @@ def test_run(client_id : str, broker : str, port : int , topic):
         publish(client, topic, "Message")
 
 if __name__ == '__main__':
-    client_id = f'subscribe-test'
+    client_id = f'publish-test'
     broker = 'localhost'
     port = 1883
     topic = "mqtt/test"
