@@ -25,7 +25,7 @@ def photo_to_MQTT(broker, port, client_id, topic, camera_id):
         
 if __name__ == "__main__":
     try:
-        photo_to_MQTT("localhost", 8883, "rockPi", "mqtt/camera", 0)
+        photo_to_MQTT("localhost", 8883, "rockPi", "mqtt/camera", 0) #on rock 1883
     except KeyboardInterrupt:
         print("Connection ended")
         exit()

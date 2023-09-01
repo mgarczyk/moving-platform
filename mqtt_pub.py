@@ -33,7 +33,7 @@ def test_run(client_id : str, broker : str, port : int , topic):
 if __name__ == '__main__':
     client_id = "publish-test"
     broker = 'localhost'
-    port = 8883
+    port = 8883 #on rock 1883
     topic = "mqtt/speed"
     try:
         test_run(client_id, broker, port, topic)

@@ -39,8 +39,8 @@ def test_run(client_id : mqtt_client, broker : str, port: int, topic: str):
 if __name__ == '__main__':
     client_id = "subscribe-test"
     broker = 'localhost'
-    port = 8883
-    topic = "mqtt/steering"
+    port = 8883 #on rock 1883
+    topic = "mqtt/steering" 
     try:
         test_run(client_id, broker, port, topic)
     except KeyboardInterrupt:
