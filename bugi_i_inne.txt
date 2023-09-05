@@ -1,0 +1,20 @@
+1)Błąd z obsługą lidaru
+
+Traceback (most recent call last):
+  File "/home/rock/moving_platform/rplidar.py", line 2, in <module>
+    from adafruit_rplidar import RPLidar
+  File "/home/rock/moving_platform/.venv/lib/python3.9/site-packages/adafruit_rplidar.py", line 121, in <module>
+    class RPLidar:
+  File "/home/rock/moving_platform/.venv/lib/python3.9/site-packages/adafruit_rplidar.py", line 139, in RPLidar
+    motor_pin: DigitalInOut,
+NameError: name 'DigitalInOut' is not defined
+
+Zmienić init w pliku adafruit_rplidar.py
+def __init__(
+        self,
+        motor_pin: None, #DigitalInOut,  <- tutaj None ma być
+        port: UART,
+        baudrate: int = 115200,
+        timeout: float = 1,
+        logging: bool = False,
+    ) -> None:

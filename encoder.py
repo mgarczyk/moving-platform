@@ -32,7 +32,7 @@ def read_encoder_speed(gpio_a, gpio_b):
         elapsed_time = time.time() - start_time
         if elapsed_time >= 1.0:  # Odczytuj prędkość co 1 sekundę
             encoder_speed = change_count / elapsed_time
-            robot_velocity = round((encoder_speed /(48*99)) * 2 * math.pi * 0.06, 2) #dzielimy odczyt przez częstotliwość impulsu mnożoną razy przekładnię. 2*pi*r jako obwód koła, co daje nam przejechaną drogę oraz prędkość.
+            robot_velocity = round((encoder_speed /(48*99)) *  math.pi * 0.102, 2) #dzielimy odczyt przez częstotliwość impulsu mnożoną razy przekładnię. 2*pi*r jako obwód koła, co daje nam przejechaną drogę oraz prędkość.
             return robot_velocity
 
 # Główna pętla programu
