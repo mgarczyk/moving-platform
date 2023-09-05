@@ -13,7 +13,6 @@ def connect_mqtt(client_id : str, broker : str, port : int ):
     return client
 
 def publish(client : str, topic : str, message):
-    time.sleep(1)
     result = client.publish(topic, message)
     status = result[0]
     if status == 0:
