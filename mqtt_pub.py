@@ -1,7 +1,8 @@
 from paho.mqtt import client as mqtt_client
 import time
 
-def connect_mqtt(client_id : str, broker : str, port : int ):
+
+def connect_mqtt(client_id : str, broker : str, port : int) -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             print("Connected to MQTT Broker!")
@@ -12,7 +13,7 @@ def connect_mqtt(client_id : str, broker : str, port : int ):
     client.connect(broker, port)
     return client
 
-def publish(client : str, topic : str, message):
+def publish(client : mqtt_client, topic : str, message):
     result = client.publish(topic, message)
     status = result[0]
     if status == 0:
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     client_id = "publish-test"
     broker = 'localhost'
     port = 8883 #on rock 1883
-    topic = "mqtt/speed"
+    topic = "mqtt/test"
     try:
         test_run(client_id, broker, port, topic)
     except KeyboardInterrupt:
