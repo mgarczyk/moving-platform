@@ -6,3 +6,4 @@ settings.json
 mqtt/
 lidar_data/
 camera/
+auto_logger.log
