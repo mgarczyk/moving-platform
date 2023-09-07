@@ -142,43 +142,90 @@ def right_turn():
     mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
     time.sleep(0.1)
 
-def end_of_alley():
-    stop()
-    time.sleep(0.5)
-
-def alley(distance_to_travel : float, dist_beetween_measures : float, is_measure : bool):
+def alley_init(dist_beetwen_measures : float):
     mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
     time.sleep(0.1)
     global soft_start, distance_tmp
     soft_start=True
     distance_tmp=0
     next_measure_pos=dist_beetween_measures
-    while distance_tmp<distance_to_travel:
-        encoder_tick=(left_ticks+right_ticks)/2
-        distance_tmp=(encoder_tick/15)*math.pi*0.102    
-        print(distance_tmp)
-        soft_start=forward(soft_start)
-        if distance_tmp>=next_measure_pos and is_measure==True:
-            logging.info(f"Mesure distance: {distance_tmp}")
-            soft_start=stop()
-            lift()
-            time.sleep(2)
-            lower()
-            time.sleep(2)
-            next_measure_pos+=dist_beetween_measures
+    dystans_przeszkoda_szerokosc=0 
+    dystans_szerokosc_temp=0
+    dystans_przeszkoda_dlugosc=0
+    return soft_start, distance_tmp, next_measure_pos, dystans_przeszkoda_szerokosc, dystans_szerokosc_temp, dystans_przeszkoda_dlugosc
+
+def alley_drive(soft_start : bool, distance_tmp : float, dystans_przeszkoda_dlugosc : float):
+    encoder_tick=(left_ticks+right_ticks)/2
+    distance_tmp=dystans_przeszkoda_dlugosc+(encoder_tick/15)*math.pi*0.102    
+    print(distance_tmp)
+    soft_start=forward(soft_start)
+    return soft_start, distance_tmp
+
+def alley_measure(distance_tmp : float, dist_beetween_measures : float, next_measure_pos : float,  soft_start : bool):
+    logging.info(f"Mesure distance: {distance_tmp}")
+    soft_start=stop()
+    lift()
+    time.sleep(2)
+    lower()
+    time.sleep(2)
+    next_measure_pos+=dist_beetween_measures
+    return next_measure_pos, soft_start
+
+def alley_end():
+    stop()
+    time.sleep(0.5)
+
+def alley(distance_to_travel : float, dist_beetween_measures : float, is_measure : bool):
+    soft_start, distance_tmp, next_measure_pos, dystans_przeszkoda_szerokosc, dystans_szerokosc_temp, dystans_przeszkoda_dlugosc = alley_init(dist_beetween_measures)
+    #AVOIDING THE OBSTACLE#
+    if any(forw_dist) < 1: 
+        logging.warning("There is obstacle, starting to avoid it.")
+        dystans_przeszkoda_szerokosc=0
+        dystans_szerokosc_temp=0
+        dystans_przeszkoda_dlugosc=0
+        left_turn()  # skret w lewo po wykryciu przeszkody
+        while any(rig_dist)<80: # jazda prosto do konca przeszkody - wolnego miejsca po prawej 
+            if any(forw_dist)<55:
+                logging.error("Can't avoid STOP.")
+                stop()
+                exit()
+            encoder_tick=(left_ticks+right_ticks)/2
+            dystans_przeszkoda_szerokosc=(encoder_tick/15)*math.pi*0.102 # droga pokonana na szerokosc 
+            soft_start=forward(soft_start) # jazda do przodu do momentu spelnienia warunku
+        right_turn() # koniec przeszkody 
+        while any(rig_dist)<80: # jazda na długosc 
+            if any(forw_dist)<55:
+                logging.error("Can't avoid STOP.")
+                stop()
+                exit()
+            encoder_tick=(left_ticks+right_ticks)/2
+            dystans_przeszkoda_dlugosc=(encoder_tick/15)*math.pi*0.102
+            soft_start=forward(soft_start)
+        right_turn() # powrot na srodek sciezki
+        while dystans_szerokosc_temp<=dystans_przeszkoda_szerokosc:
+            encoder_tick=(left_ticks+right_ticks)/2
+            dystans_szerokosc_temp=(encoder_tick/15)*math.pi*0.102
+            soft_start=forward(soft_start)
+        left_turn()
+    else:
+        ##DRIVING WHEN THERE ARE NO OBSTACLES##
+        while distance_tmp<distance_to_travel:
+            soft_start, distance_tmp = alley_drive(soft_start, distance_tmp, dystans_przeszkoda_dlugosc)
+            if distance_tmp>=next_measure_pos and is_measure==True:
+                next_measure_pos, soft_start = alley_measure(distance_tmp, dist_beetween_measures, next_measure_pos, soft_start)
                     
 def curve(route : str, shelf_width : float):
     mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
     if route=='P':
         left_turn()
         alley(shelf_width, 1, False)
-        end_of_alley()
+        alley_end()
         left_turn()
         return 'L'
     elif route=='L':
         right_turn()
         alley(shelf_width, 1, False)
-        end_of_alley()
+        alley_end()
         right_turn()
         return 'P'        
 
