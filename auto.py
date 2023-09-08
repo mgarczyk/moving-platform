@@ -46,8 +46,8 @@ def prepare_lidar_data(payload):
     text=text[3:-2]
     distances=text.split(',')
     distances=[int(actual_shelf) for actual_shelf in distances]
-    forw_dist=distances[150:210]
-    rig_dist=distances[240:300]
+    forw_dist=distances[170:190]
+    rig_dist=distances[250:290]
     left_dist=distances[60:120]
     reverse_dist=distances[329:359]
     reverse_dist.extend(distances[0:30])
@@ -74,13 +74,13 @@ def on_message(client : mqtt_client, obj, msg):
         
 def pwm_set_turn():
        pwm_R.duty_cycle = 0.5
-       pwm_L.duty_cycle = 0.49
+       pwm_L.duty_cycle = 0.5
 
 def pwm_set(soft_start : bool):
     if soft_start == True:
         for speed in [0.75,0.7,0.65,0.6,0.55,0.5,0.45,0.4,0.35,0.3,0.25]:
             pwm_R.duty_cycle = speed
-            pwm_L.duty_cycle = speed
+            pwm_L.duty_cycle = speed #TODO korekcje driftu
             time.sleep(0.07)
     soft_start=False
     return soft_start
@@ -177,39 +177,42 @@ def alley_end():
 
 def alley(distance_to_travel : float, dist_beetween_measures : float, is_measure : bool):
     soft_start, distance_tmp, next_measure_pos, dystans_przeszkoda_szerokosc, dystans_szerokosc_temp, dystans_przeszkoda_dlugosc = alley_init(dist_beetween_measures)
-    #AVOIDING THE OBSTACLE#
-    if any(forw_dist) < 1: 
-        logging.warning("There is obstacle, starting to avoid it.")
-        dystans_przeszkoda_szerokosc=0
-        dystans_szerokosc_temp=0
-        dystans_przeszkoda_dlugosc=0
-        left_turn()  # skret w lewo po wykryciu przeszkody
-        while any(rig_dist)<80: # jazda prosto do konca przeszkody - wolnego miejsca po prawej 
-            if any(forw_dist)<55:
-                logging.error("Can't avoid STOP.")
-                stop()
-                exit()
-            encoder_tick=(left_ticks+right_ticks)/2
-            dystans_przeszkoda_szerokosc=(encoder_tick/15)*math.pi*0.102 # droga pokonana na szerokosc 
-            soft_start=forward(soft_start) # jazda do przodu do momentu spelnienia warunku
-        right_turn() # koniec przeszkody 
-        while any(rig_dist)<80: # jazda na długosc 
-            if any(forw_dist)<55:
-                logging.error("Can't avoid STOP.")
-                stop()
-                exit()
-            encoder_tick=(left_ticks+right_ticks)/2
-            dystans_przeszkoda_dlugosc=(encoder_tick/15)*math.pi*0.102
-            soft_start=forward(soft_start)
-        right_turn() # powrot na srodek sciezki
-        while dystans_szerokosc_temp<=dystans_przeszkoda_szerokosc:
-            encoder_tick=(left_ticks+right_ticks)/2
-            dystans_szerokosc_temp=(encoder_tick/15)*math.pi*0.102
-            soft_start=forward(soft_start)
-        left_turn()
-    else:
+    
+    dystans_przeszkoda_szerokosc=0
+    dystans_szerokosc_temp=0
+    dystans_przeszkoda_dlugosc=0
+    while distance_tmp<distance_to_travel:
+        #AVOIDING THE OBSTACLE#
+        if any(x<60 for x in forw_dist):   
+            print("forw:", forw_dist)
+            logging.warning("There is obstacle, starting to avoid it.")
+            left_turn()  # skret w lewo po wykryciu przeszkody
+            while any(x<120 for x in rig_dist): # jazda prosto do konca przeszkody - wolnego miejsca po prawej 
+                if any(x<50 for x in forw_dist):
+                    logging.error("Can't avoid STOP.")
+                    stop()
+                    exit()
+                encoder_tick=(left_ticks+right_ticks)/2
+                dystans_przeszkoda_szerokosc=(encoder_tick/15)*math.pi*0.102 # droga pokonana na szerokosc 
+                soft_start=forward(soft_start) # jazda do przodu do momentu spelnienia warunku
+            right_turn() # koniec przeszkody 
+            while any(x<120 for x in rig_dist): # jazda na długosc 
+                print(forw_dist)
+                if any(x<50 for x in forw_dist):
+                    logging.error("Can't avoid STOP.")
+                    stop()
+                    exit()
+                encoder_tick=(left_ticks+right_ticks)/2
+                dystans_przeszkoda_dlugosc=(encoder_tick/15)*math.pi*0.102
+                soft_start=forward(soft_start)
+            right_turn() # powrot na srodek sciezki
+            while dystans_szerokosc_temp<=dystans_przeszkoda_szerokosc:
+                encoder_tick=(left_ticks+right_ticks)/2
+                dystans_szerokosc_temp=(encoder_tick/15)*math.pi*0.102
+                soft_start=forward(soft_start)
+            left_turn()
         ##DRIVING WHEN THERE ARE NO OBSTACLES##
-        while distance_tmp<distance_to_travel:
+        else:
             soft_start, distance_tmp = alley_drive(soft_start, distance_tmp, dystans_przeszkoda_dlugosc)
             if distance_tmp>=next_measure_pos and is_measure==True:
                 next_measure_pos, soft_start = alley_measure(distance_tmp, dist_beetween_measures, next_measure_pos, soft_start)
