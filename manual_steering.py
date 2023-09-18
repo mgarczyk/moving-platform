@@ -11,8 +11,6 @@ Dir_LIFT_GPIO=periphery.GPIO(157,"out")
 PWM_LIFT_GPIO=periphery.GPIO(42,"out")
 soft_start=True
 lift_flag=True
-#pwm_R.frequency=1e3
-#pwm_L.frequency=1e3
 pwm_L.enable()
 pwm_R.enable()
 data = -1
