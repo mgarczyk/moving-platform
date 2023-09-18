@@ -26,7 +26,7 @@ def Sensors(VAR_A,VAR_B):
     distance=us100.distance
     if distance == None:
         distance=9999
-    # print(distance)
+    print(distance)
     return(distance)
 
 def publisher_us100():
@@ -39,6 +39,7 @@ def publisher_us100():
             x4=int(Sensors(True,True))
             mess=[x1,x2,x3,x4]
             distances=f"{mess}"
+            print(distances)
             mqtt_pub.publish(client, topic, distances)
         except KeyboardInterrupt:
             MUX_GPIO_A.write(False)

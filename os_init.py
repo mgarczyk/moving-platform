@@ -17,6 +17,8 @@ def pwm_init():
         pwm_L.frequency=1e3
         pwm_R.enable
         pwm_L.enable
+        pwm_R.duty_cycle = 1.0
+        pwm_L.duty_cycle = 1.0
         print("PWM frequency set")
     except OSError:
         print("PWM został juz zainicjowany.")
