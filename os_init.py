@@ -5,7 +5,6 @@ def pwm_sys_init():
     try:
         os.system("date")
         os.system("echo 0 > /sys/class/pwm/pwmchip0/export")
-        os.system("echo 0 > /sys/class/pwm/pwmchip1/export")
     except OSError:
         print("PWM system error")
 

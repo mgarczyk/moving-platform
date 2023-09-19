@@ -3,16 +3,14 @@ import periphery
 import paho.mqtt.client as mqtt
 import os
 
-pwm_R = periphery.PWM(0, 0)
-pwm_L = periphery.PWM(1, 0)
+PWM_motor = periphery.PWM(0, 0)
 Dir_L_GPIO=periphery.GPIO(71,"out")
 Dir_R_GPIO=periphery.GPIO(72,"out")
 Dir_LIFT_GPIO=periphery.GPIO(157,"out")
 PWM_LIFT_GPIO=periphery.GPIO(42,"out")
 soft_start=True
 lift_flag=True
-pwm_L.enable()
-pwm_R.enable()
+PWM_motor.enable()
 data = -1
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -23,18 +21,15 @@ def on_message(client, userdata, msg):
     data = msg.payload.decode('utf8')
     
 def pwm_set_turn():
-       pwm_R.duty_cycle = 0.5
-       pwm_L.duty_cycle = 0.5
+       PWM_motor.duty_cycle = 0.5
 
 def pwm_set(soft_start):
     if soft_start == True:
         for speed in [0.75,0.7,0.65,0.6,0.55,0.5,0.45,0.4,0.35,0.3,0.25]:
-            pwm_R.duty_cycle = speed
-            pwm_L.duty_cycle = speed
+            PWM_motor.duty_cycle = speed
             time.sleep(0.07)
     else:
-        pwm_R.duty_cycle = 0.25
-        pwm_L.duty_cycle = 0.25
+        PWM_motor.duty_cycle = 0.25
     soft_start=False
     return soft_start
 
@@ -61,8 +56,7 @@ def right():
     pwm_set_turn()
 
 def stop():
-    pwm_R.duty_cycle = 1.0
-    pwm_L.duty_cycle = 1.0
+    PWM_motor.duty_cycle = 1.0
     PWM_LIFT_GPIO.write(False)
   
     
