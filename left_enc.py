@@ -41,7 +41,6 @@ def encoder_callback(pin_a, pin_b, topic):
                 tick_count-=1
             prev_value_a = a_state
             prev_b_state = b_state
-            # Tutaj możesz umieścić swoje własne operacje lub wyświetlić wynik
         mqtt_pub.publish(client, topic_pub, tick_count)
         time.sleep(0.05)
 

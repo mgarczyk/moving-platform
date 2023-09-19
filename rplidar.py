@@ -40,14 +40,10 @@ if __name__ == '__main__':
     client = connect_mqtt(client_id, broker, port)
 
     try:
-        # print(lidar.get_info())
         for scan in lidar.iter_scans():
             for (_, angle, distance) in scan:
                 scan_data[min([359, floor(angle)])] = int(distance/10)
             print(scan_data)
-            # process_data(scan_data)
-            # distance = distances(scan_data)
-            # message=bytearray(scan_data)
             mess=f"{scan_data}"
             client.publish(topic, mess)
             
@@ -56,5 +52,3 @@ if __name__ == '__main__':
         print('Stopping.')
         lidar.stop()
         lidar.disconnect()
-    lidar.stop()
-    lidar.disconnect()
