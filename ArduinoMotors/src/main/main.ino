@@ -5,7 +5,8 @@
 #define DIR_LEFT 4
 #define PWM_L 5
 
-void soft_star()
+String read_now = "";
+String read_before = "";
 
 void left() {
   digitalWrite(DIR_RIGHT,LOW);
@@ -68,8 +69,6 @@ void setup() {
   pinMode(DIR_RIGHT, OUTPUT);
   pinMode(PWM_R, OUTPUT);
 }
-
-
 
 void loop() {
   if (Serial.available() > 0) {
