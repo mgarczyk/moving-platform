@@ -1,0 +1,12 @@
+{
+    "ENCODER_LEFT_A" : 76,
+    "ENCODER_LEFT_B" : 73,
+    "ENCODER_RIGHT_A" : 74,
+    "ENCODER_RIGHT_B" : 158,
+    "MUX_PIN_A" : 154,
+    "MUX_PIN_B" : 156,
+    "MUX_UART" : "/dev/ttyS4",
+    "LIDAR_PORT" : "/dev/ttyUSB0",
+    "MQTT_BROKER" : "localhost",
+    "MQTT_PORT" : 1883
+}
