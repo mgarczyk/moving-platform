@@ -9,15 +9,15 @@ String read_now = "";
 String read_before = "";
 
 void left() {
-  digitalWrite(DIR_RIGHT,LOW);
-  digitalWrite(DIR_LEFT, HIGH);
+  digitalWrite(DIR_RIGHT,HIGH);
+  digitalWrite(DIR_LEFT, LOW);
   analogWrite(PWM_R, 120);
   analogWrite(PWM_L, 120);
 }
 
 void right() {
-  digitalWrite(DIR_RIGHT, HIGH);
-  digitalWrite(DIR_LEFT, LOW);
+  digitalWrite(DIR_RIGHT, LOW);
+  digitalWrite(DIR_LEFT, HIGH);
   analogWrite(PWM_R, 120);
   analogWrite(PWM_L, 120);
 }
@@ -25,26 +25,21 @@ void right() {
 void forward() {
   digitalWrite(DIR_RIGHT, LOW);
   digitalWrite(DIR_LEFT, LOW);
-  for(int i=1; i<=200; i+=25){
+  for(int i=0; i<=200; i+=20){
     analogWrite(PWM_R, i);
     analogWrite(PWM_L, i);
     delay(25);
   }
-  analogWrite(PWM_R, 200);
-  analogWrite(PWM_L, 200);
 }
 
 void back() {
   digitalWrite(DIR_RIGHT, HIGH);
   digitalWrite(DIR_LEFT, HIGH);
-  for(int i=1; i<=200; i+=25){
+  for(int i=0; i<=200; i+=20){
     analogWrite(PWM_R, i);
     analogWrite(PWM_L, i);
     delay(25);
   }
-  analogWrite(PWM_R, 200);
-  analogWrite(PWM_L, 200);
-
 }
 
 void stop_motors() {
@@ -65,9 +60,11 @@ void choose_dir(String read_now) {
 
 void setup() {
   Serial.begin(9600);
+  Serial.flush()
   pinMode(DIR_LEFT, OUTPUT);
   pinMode(DIR_RIGHT, OUTPUT);
   pinMode(PWM_R, OUTPUT);
+  pinMode(PWM_L, OUTPUT)
 }
 
 void loop() {
