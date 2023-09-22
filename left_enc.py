@@ -1,12 +1,21 @@
 import time
 import mqtt_pub
+import json
 from periphery import GPIO
 from paho.mqtt import client as mqtt_client
 import paho.mqtt.subscribe as subscribe
 
-ENCODER2_PIN_A = 76
-ENCODER2_PIN_B = 73
-DIR_L=71
+try:
+    with open ("config.json") as config_f:
+        config = json.load(config_f)
+        ENCODER_LEFT_A = config["ENCODER_LEFT_A"]
+        ENCODER_LEFT_B = config["ENCODER_LEFT_B"]
+        BROKER = config["MQTT_BROKER"]
+        PORT = config["MQTT_PORT"]
+        config_f.close()
+except FileNotFoundError:
+    print("Brak pliku konfiguracyjnego.")
+    exit()
 
 def on_message(client, obj, msg):
     global reset_encoders
@@ -37,16 +46,14 @@ def encoder_callback(pin_a, pin_b, topic):
         time.sleep(0.05)
 
 try:
-    broker = 'localhost'
-    port = 1883
     topic_pub = "mqtt/left_ticks"
     topic_sub = "mqtt/reset_encoders"
     client = mqtt_client.Client()
-    client.connect(broker, port)
+    client.connect(BROKER, PORT)
     client.subscribe(topic_sub, 0)
     client.on_message=on_message
     client.loop_start()
     reset_encoders=0
-    encoder_callback(ENCODER2_PIN_A,ENCODER2_PIN_B, topic_pub)
+    encoder_callback(ENCODER_LEFT_A,ENCODER_LEFT_B, topic_pub)
 except KeyboardInterrupt:
     pass

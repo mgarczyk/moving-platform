@@ -4,21 +4,23 @@ import mqtt_pub
 import time
 import serial
 import os
+import json 
 
-##MUX PINOUT##
-MUX_PIN_A=154
-MUX_PIN_B=156
-MUX_GPIO_A=GPIO(MUX_PIN_A,"out")
-MUX_GPIO_B=GPIO(MUX_PIN_B,"out")
-
-##BROKER##
-broker = 'localhost'
-port = 1883
-topic = "mqtt/distance"
-client_id = f'publish-distance'
+try:
+    with open ("config.json") as config_f:
+        config = json.load(config_f)
+        UART_MUX = config["MUX_UART"]
+        MUX_GPIO_A=GPIO(config["MUX_PIN_A"],"out")
+        MUX_GPIO_B=GPIO(config["MUX_PIN_B"],"out")
+        BROKER = config["MQTT_BROKER"]
+        PORT = config["MQTT_PORT"]
+        config_f.close()
+except FileNotFoundError:
+    print("Brak pliku konfiguracyjnego.")
+    exit()
 
 def Sensors(VAR_A,VAR_B):     
-    UART_US100=serial.Serial("/dev/ttyS4",baudrate=9600)
+    UART_US100=serial.Serial(UART_MUX ,baudrate=9600)
     MUX_GPIO_A.write(VAR_A)
     MUX_GPIO_B.write(VAR_B)
     time.sleep(0.001)    
@@ -30,7 +32,9 @@ def Sensors(VAR_A,VAR_B):
     return(distance)
 
 def publisher_us100():
-    client = mqtt_pub.connect_mqtt(client_id, broker, port)
+    client_id = "us_100"
+    topic = "mqtt/us_100"
+    client = mqtt_pub.connect_mqtt(client_id, BROKER, PORT)
     while True:
         try:
             x1=int(Sensors(False,True))
@@ -45,5 +49,6 @@ def publisher_us100():
             MUX_GPIO_A.write(False)
             MUX_GPIO_B.write(False)
             break
+
 if __name__ == "__main__":
     publisher_us100()

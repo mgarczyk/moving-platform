@@ -1,10 +1,22 @@
 from math import floor
 from adafruit_rplidar import RPLidar
 from paho.mqtt import client as mqtt_client
+import json
+
+try:
+    with open ("config.json") as config_f:
+        config = json.load(config_f)
+        LIDAR = RPLidar(None, config["LIDAR_PORT"], timeout=3)
+        BROKER = config["MQTT_BROKER"]
+        PORT = config["MQTT_PORT"]
+        config_f.close()
+except FileNotFoundError:
+    print("Brak pliku konfiguracyjnego.")
+    exit()
+
 
 # Setup the RPLidar
-PORT_NAME = '/dev/ttyUSB0'
-lidar = RPLidar(None, PORT_NAME, timeout=3)
+
 
 # used to scale data to fit on the screen
 max_distance = 0
@@ -33,14 +45,12 @@ def distances(scan_data):
 scan_data = [0]*360
 
 if __name__ == '__main__':
-    client_id = f'subscribe-test'
-    broker = 'localhost'
-    port = 1883
+    client_id = f'lidar'
     topic = "mqtt/lidar"
-    client = connect_mqtt(client_id, broker, port)
+    client = connect_mqtt(client_id, BROKER, PORT)
 
     try:
-        for scan in lidar.iter_scans():
+        for scan in LIDAR.iter_scans():
             for (_, angle, distance) in scan:
                 scan_data[min([359, floor(angle)])] = int(distance/10)
             print(scan_data)
@@ -50,5 +60,5 @@ if __name__ == '__main__':
    
     except KeyboardInterrupt:
         print('Stopping.')
-        lidar.stop()
-        lidar.disconnect()
+        LIDAR.stop()
+        LIDAR.disconnect()
