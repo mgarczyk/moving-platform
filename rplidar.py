@@ -1,7 +1,7 @@
+import json
 from math import floor
 from adafruit_rplidar import RPLidar
 from paho.mqtt import client as mqtt_client
-import json
 
 try:
     with open ("config.json") as config_f:
@@ -14,11 +14,7 @@ except FileNotFoundError:
     print("Brak pliku konfiguracyjnego.")
     exit()
 
-
-# Setup the RPLidar
-
-
-# used to scale data to fit on the screen
+# Used to scale data to fit on the screen
 max_distance = 0
 def connect_mqtt(client_id : str, broker : str, port : int ):
     def on_connect(client, userdata, flags, rc):
