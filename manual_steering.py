@@ -1,10 +1,24 @@
 import time
+import serial
+import json
 import periphery
 import paho.mqtt.client as mqtt
-import serial
 
-Dir_LIFT_GPIO = periphery.GPIO(157, "out")
-PWM_LIFT_GPIO = periphery.GPIO(42, "out")
+
+try:
+    with open ("config.json") as config_f:
+        config = json.load(config_f)
+        DIR_LIFT = periphery.GPIO(config["DIR_LIFT"], "out")
+        SET_PWM_LIFT = periphery.GPIO(config["SET_PWM_LIFT"], "out")
+        BROKER = config["MQTT_BROKER"]
+        PORT = config["MQTT_PORT"]
+        arduino = serial.Serial(config["ARDUINO_PORT"], 9600, timeout=1)
+        arduino.reset_input_buffer()
+        config_f.close()
+except FileNotFoundError:
+    print("Brak pliku konfiguracyjnego.")
+    exit()
+
 lift_flag = True
 data_actual = "-1"
 
@@ -41,14 +55,14 @@ def stop():
 
 def lift():
     stop()
-    Dir_LIFT_GPIO.write(True)
-    PWM_LIFT_GPIO.write(True)
+    DIR_LIFT.write(True)
+    SET_PWM_LIFT.write(True)
 
 
 def lower():
     stop()
-    Dir_LIFT_GPIO.write(False)
-    PWM_LIFT_GPIO.write(True)
+    DIR_LIFT.write(False)
+    SET_PWM_LIFT.write(True)
 
 
 def choose_direction(data_actual: str):
@@ -67,19 +81,18 @@ def choose_direction(data_actual: str):
     else:
         stop()
 
-
 if __name__ == '__main__':
-    arduino = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
-    arduino.reset_input_buffer()
     client = mqtt.Client()
     client.on_connect = on_connect
-    client.connect("localhost", 1883)
+    client.connect(BROKER, PORT)
     data_before = ""
     try:
         while True:
             client.on_message = on_message
             client.loop_start()
-            choose_direction(data_actual)
+            if data_actual != data_before:
+                choose_direction(data_actual)
+                print(data_actual)
             data_before = data_actual
             time.sleep(0.25)
     except KeyboardInterrupt:
