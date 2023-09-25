@@ -69,7 +69,7 @@ def choose_direction(data_actual: str):
 
 
 if __name__ == '__main__':
-    arduino = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+    arduino = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
     arduino.reset_input_buffer()
     client = mqtt.Client()
     client.on_connect = on_connect
