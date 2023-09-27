@@ -33,7 +33,7 @@ def Sensors(VAR_A,VAR_B):
 
 def publisher_us100():
     client_id = "us_100"
-    topic = "mqtt/us_100"
+    topic = "mqtt/us_100_dist"
     client = mqtt_pub.connect_mqtt(client_id, BROKER, PORT)
     while True:
         try:
