@@ -1,7 +1,10 @@
 import json
+import time
 from math import floor
 from adafruit_rplidar import RPLidar
 from paho.mqtt import client as mqtt_client
+import copy
+import mqtt_pub
 
 try:
     with open ("config.json") as config_f:
@@ -38,22 +41,35 @@ def distances(scan_data):
     print(f'Back: {Back}')
     return Front, Left, Right, Back
 
-scan_data = [0]*360
+#Jeżeli w dwóch iteracjach na danym indeksie jest ta sama watość to znaczy że jest to błąd i należy się tej wartości pozbyć zerując ją.
+#Optymalizacja?
+def lidar_fix(scan_data, scan_data_before):
+    for i in range(len(scan_data)):
+        if scan_data[i] == scan_data_before[i]:
+            scan_data[i] = 0
+    return scan_data
+
 
 if __name__ == '__main__':
     client_id = f'lidar'
     topic = "mqtt/lidar"
     client = connect_mqtt(client_id, BROKER, PORT)
-
+    scan_data = [0] * 360
+    scan_data_before = [0] * 360
     try:
         for scan in LIDAR.iter_scans():
             for (_, angle, distance) in scan:
-                scan_data[min([359, floor(angle)])] = int(distance/10)
-            print(scan_data)
-            mess=f"{scan_data}"
-            client.publish(topic, mess)
-            
-   
+                    scan_data[min([359, floor(angle)])] = distance/10
+            scan_data = lidar_fix(scan_data, scan_data_before)
+            # print("\n")
+            # print("Before:", scan_data_before[260:290])
+            # print("\n")
+            # print("Now: ", scan_data[260:290])
+            # print("\n")
+            scan_data_before = copy.deepcopy(scan_data)
+            scan_data = [int(i) for i in scan_data]
+            mqtt_mess=f"{scan_data}"
+            mqtt_pub.publish(client, topic, mqtt_mess)
     except KeyboardInterrupt:
         print('Stopping.')
         LIDAR.stop()
