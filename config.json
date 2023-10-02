@@ -36,10 +36,10 @@
     "LIDAR_RIGHT_TRANSFORM" : 35,
     "LIDAR_BACK_TRANSFORM" : 50,
     "//KOMENTARZ LIDAR_REACTION" : "Minimalna odległość od przeszkody na którą nastąpi reakcja - LIDAR [cm].",
-    "LIDAR_FORWARD_REACTION" : 30,
-    "LIDAR_LEFT_REACTION" : 50,
-    "LIDAR_RIGHT_REACTION" : 50,
+    "LIDAR_FORWARD_REACTION" : 70,
+    "LIDAR_LEFT_REACTION" : 120,
+    "LIDAR_RIGHT_REACTION" : 150,
     "LIDAR_BACK_REACTION" : 30,
     "//KOMENTARZ - US100" : "Minimalna odległość od przeszakody po której nastąpi reakcja - US100 [cm].",
-    "US_100_REACTION" : 40
+    "US_100_REACTION" : 80
 }
