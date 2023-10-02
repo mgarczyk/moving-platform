@@ -24,7 +24,7 @@ try:
         LIDAR_BACK_AVOIDING_DISTANCE = config["LIDAR_BACK_TRANSFORM"] + config["LIDAR_BACK_REACTION"]
         SET_PWM_LIFT = periphery.GPIO(config["SET_PWM_LIFT"], "out")
         DIR_LIFT = periphery.GPIO(config["DIR_LIFT"], "out")
-        US_100_REACTION = config["US_100_REACTION"]
+        LIDAR_FORWARD_AVOIDING_DISTANCE = config["LIDAR_FORWARD_AVOIDING_DISTANCE"]
         WHEEL_DIAMETER = config["WHEEL_DIAMETER"]
         BROKER = config["MQTT_BROKER"]
         PORT = config["MQTT_PORT"]
@@ -192,17 +192,17 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
     distance_tmp, next_measure_pos, sum_len_of_obstacle = alley_init()
     while distance_tmp < distance_to_travel:
         # AVOIDING THE OBSTACLE#
-        if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):# or any(us < US_100_REACTION for us in US_100_dist):
+        if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
             obstacle_width = 0
             obstacle_width_return = 0
             obstacle_len = 0
             # logging.info(f"US_100: {US_100_dist}")
-            if any(dist < US_100_REACTION for dist in LIDAR_front_right):
+            if any(dist < LIDAR_FORWARD_AVOIDING_DISTANCE for dist in LIDAR_front_right):
                 logging.info(f"Avoiding obstacle from right side.")
                 left_turn()  # skret w lewo po wykryciu przeszkody
                 forward()  # jazda prosto do konca przeszkody - wolnego miejsca po prawej
                 while any(i < LIDAR_RIGHT_AVOIDING_DISTANCE for i in LIDAR_right_dist):
-                    if any(i < US_100_REACTION for i in LIDAR_forw_dist):
+                    if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
                         logging.info("Can't avoid STOP.")
                         stop()
                         exit()
@@ -216,7 +216,7 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
                 forward()
                 time.sleep(2.5)
                 while any(i < LIDAR_RIGHT_AVOIDING_DISTANCE for i in LIDAR_right_dist):  # jazda na długosc
-                    if any(i < US_100_REACTION for i in LIDAR_forw_dist):
+                    if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
                         logging.error("Can't avoid STOP.")
                         stop()
                         exit()
@@ -228,32 +228,30 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
                 forward()
                 while obstacle_width_return <= obstacle_width:
                     encoder_tick = (left_ticks+right_ticks)/2
-                    obstacle_width_return = (
-                        encoder_tick/15) * math.pi * WHEEL_DIAMETER
+                    obstacle_width_return = (encoder_tick/15) * math.pi * WHEEL_DIAMETER
                 left_turn()
                 forward()
                 logging.info(f"Obstacle avoided.")
-            elif any(dist < US_100_REACTION for dist in LIDAR_front_left):
+            elif any(dist < LIDAR_FORWARD_AVOIDING_DISTANCE for dist in LIDAR_front_left):
                 logging.warning(f"Avoiding obstacle from left side.")
                 right_turn()
                 # jazda prosto do konca przeszkody - wolnego miejsca po prawej
                 forward()
                 while any(i < LIDAR_LEFT_AVOIDING_DISTANCE for i in LIDAR_left_dist):
-                    if any(i < US_100_REACTION for i in LIDAR_forw_dist):
+                    if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
                         logging.error("Can't avoid STOP.")
                         stop()
                         exit()
                     encoder_tick = (left_ticks+right_ticks)/2
                     # droga pokonana na szerokosc
-                    obstacle_width = (encoder_tick/15) * \
-                        math.pi * WHEEL_DIAMETER
+                    obstacle_width = (encoder_tick/15) * math.pi * WHEEL_DIAMETER
                 logging.info(f"Obstacle width: {obstacle_width}")
                 left_turn()  # koniec przeszkody
-                forward()
-                time.sleep(2.5)
+                forward()   
+                time.sleep(2.5) # po tym czasie przeszkoda będzie w kącie wykrywania lidaru
                 while any(i < LIDAR_LEFT_AVOIDING_DISTANCE for i in LIDAR_left_dist):  # jazda na długosc
                     print(LIDAR_forw_dist)
-                    if any(i < US_100_REACTION for i in LIDAR_forw_dist):
+                    if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
                         logging.error("Can't avoid STOP.")
                         stop()
                         exit()
@@ -264,8 +262,7 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
                 left_turn()  # powrot na srodek sciezki
                 while obstacle_width_return <= obstacle_width:
                     encoder_tick = (left_ticks+right_ticks)/2
-                    obstacle_width_return = (
-                        encoder_tick/15) * math.pi * WHEEL_DIAMETER
+                    obstacle_width_return = (encoder_tick/15) * math.pi * WHEEL_DIAMETER
                     forward()
                 right_turn()
                 logging.info(f"Obstacle avoided.")
