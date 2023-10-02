@@ -23,12 +23,11 @@ def Sensors(VAR_A,VAR_B):
     UART_US100=serial.Serial(UART_MUX ,baudrate=9600)
     MUX_GPIO_A.write(VAR_A)
     MUX_GPIO_B.write(VAR_B)
-    time.sleep(0.001)    
+    time.sleep(0.015)    
     us100=adafruit_us100.US100(UART_US100)
     distance=us100.distance
     if distance == None:
         distance=9999
-    print(distance)
     return(distance)
 
 def publisher_us100():
