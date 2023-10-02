@@ -11,6 +11,9 @@
 #define ENC_L_B 8
 #define ENC_R_B 9
 
+
+
+
 const int drift_correction = 5;
 const int PWM_step_delay = 100;
 const int PWM_val_turn = 150;
@@ -92,23 +95,22 @@ int serial_execute(String read_now) {
   else return 0;
 }
 
-void read_enc(){
+void read_then_send_enc(){
   long newLeft, newRight;
   newLeft = encLeft.read();
   newRight = encRight.read();
   if (newLeft != positionLeft || newRight != positionRight) {
-    Serial.print("Left = ");
-    Serial.print(newLeft);
-    Serial.print(", Right = ");
-    Serial.print(newRight);
-    Serial.println();
     positionLeft = newLeft;
     positionRight = newRight;
+    Serial.print(newLeft);
+    Serial.print(":");
+    Serial.print(newRight);
+    Serial.print("\n");
   }
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.flush();
   pinMode(DIR_LEFT, OUTPUT);
   pinMode(DIR_RIGHT, OUTPUT);
@@ -123,11 +125,9 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     read_now = Serial.readStringUntil('\n');
-    Serial.println(read_now);
-    if (read_now != read_before) {
-      serial_execute(read_now);
-    }
-    read_before = read_now;
+    Serial.flush();
   }
-  read_enc();
+  if (read_now != read_before) serial_execute(read_now);
+  read_before = read_now;
+  read_then_send_enc();
 }

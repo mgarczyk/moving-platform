@@ -28,7 +28,7 @@ try:
         WHEEL_DIAMETER = config["WHEEL_DIAMETER"]
         BROKER = config["MQTT_BROKER"]
         PORT = config["MQTT_PORT"]
-        arduino = serial.Serial(config["ARDUINO_PORT"], 9600, timeout=3)
+        arduino = serial.Serial(config["ARDUINO_PORT"], 9600, timeout=0.1)
         arduino.reset_input_buffer()
         distance_tmp = 0
         left_ticks = 0
@@ -106,6 +106,9 @@ def on_message(client: mqtt_client, obj, msg):
         # except IndexError:
         #     pass
 
+def reset_encoders():                               # <-------------------DO RESETOWANIA ENKODERÓW, CHYBA DODAŁEM WSZĘDZIE GDZIE MA BYĆ------------------------------>
+    arduino.write(b"reset\n") 
+
 def forward():
     arduino.write(b"forward\n")
 
@@ -134,13 +137,13 @@ def lower():
 
 def stop():
     arduino.write(b"stop\n")
-
+    reset_encoders()
 
 def left_turn():
     left()
     time.sleep(2.75)
     stop()
-    mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
+    reset_encoders()
     time.sleep(0.1)
 
 
@@ -148,12 +151,15 @@ def right_turn():
     right()
     time.sleep(2.75)
     stop()
-    mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
+    reset_encoders()
     time.sleep(0.1)
 
+def read_encoders():
+    encoder = arduino.readline()
+    print(encoder)
 
 def alley_init():
-    mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
+    reset_encoders()
     time.sleep(0.1)
     global distance_tmp
     distance_tmp = 0
@@ -165,8 +171,7 @@ def alley_init():
 
 def alley_drive(distance_tmp: float, sum_len_of_obstacle: float):
     encoder_tick = (left_ticks+right_ticks)/2
-    distance_tmp = sum_len_of_obstacle + \
-        (encoder_tick/14.85) * math.pi * WHEEL_DIAMETER
+    distance_tmp = sum_len_of_obstacle + (encoder_tick/14.85) * math.pi * WHEEL_DIAMETER
     print(distance_tmp)
     return distance_tmp
 
@@ -209,7 +214,7 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
                     encoder_tick = (left_ticks+right_ticks)/2
                     # droga pokonana na szerokosc
                     obstacle_width = (encoder_tick/15) * math.pi * WHEEL_DIAMETER
-                    logging.info(f"omijanie: {min(LIDAR_right_dist)}")
+                    logging.info(f"Avoiding: {min(LIDAR_right_dist)}")
                     time.sleep(0.01)
                 logging.info(f"Obstacle width: {obstacle_width}")
                 right_turn()  # koniec przeszkody
@@ -274,7 +279,7 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
 
 
 def curve(START_WALL_POS: str, SHELF_WIDTH: float, ALLEY_WIDTH: float):
-    mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
+    reset_encoders()
     if START_WALL_POS == 'P':
         left_turn()
         alley(SHELF_WIDTH+ALLEY_WIDTH, 1, MEASURE_FLAG)
@@ -302,7 +307,7 @@ if __name__ == '__main__':
     actual_shelf = 0
     while actual_shelf <= NUMBER_OF_SHELFS:
         try:
-            mqtt_pub.publish(client, "mqtt/reset_encoders", "1")
+            reset_encoders()
             time.sleep(0.1)
             alley(ALLEY_LEN, DIST_BEETWEEN_MEASURES, MEASURE_FLAG)
             actual_shelf = actual_shelf+1
@@ -316,4 +321,3 @@ if __name__ == '__main__':
             stop()
             config_f.close()
             exit()
-    stop()
