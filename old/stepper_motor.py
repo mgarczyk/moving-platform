@@ -1,3 +1,5 @@
+# Silnik okazał się zbyt słaby do założonego celu. Nie jest w stanie podnieść podnośnika.
+
 from periphery import GPIO
 import time
 
@@ -24,4 +26,4 @@ def Stepper_motor(Direction):
                 break
             
 if __name__ == "__main__":
-     Stepper_motor(False) #1 for CW - clockwise 0 for counterclockwise
+     Stepper_motor(False) 

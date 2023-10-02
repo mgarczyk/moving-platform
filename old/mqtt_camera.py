@@ -1,3 +1,4 @@
+# Skrypt do wykorzystania wszytkich możliwośći aplikacji, w innym przypadku niepotrzebny, duże zużycie zasobów i czasu.
 import cv2
 import time
 import mqtt_pub

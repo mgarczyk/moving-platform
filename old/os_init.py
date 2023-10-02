@@ -1,3 +1,4 @@
+# Sterowanie silnikami - kierunki oraz PWM przeniesione na Arduino, ze względu na opóźnienienia Linuxa.
 import os
 import periphery
 
