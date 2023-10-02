@@ -3,12 +3,11 @@ import json
 from paho.mqtt import client as mqtt_client
 from periphery import GPIO
 import mqtt_pub
-
 try:
     with open ("config.json") as config_f:
         config = json.load(config_f)
-        ENCODER_LEFT_A = config["ENCODER_LEFT_A"]
-        ENCODER_LEFT_B = config["ENCODER_LEFT_B"]
+        ENCODER_LEFT_A = config["ENCODER_RIGHT_A"]
+        ENCODER_LEFT_B = config["ENCODER_RIGHT_B"]
         BROKER = config["MQTT_BROKER"]
         PORT = config["MQTT_PORT"]
         config_f.close()
@@ -41,7 +40,9 @@ def encoder_callback(pin_a, pin_b, topic):
                 tick_count += 1
         prev_a_state = a_state
         prev_b_state = b_state
-        mqtt_pub.publish(client, topic_pub, tick_count)
+        print(tick_count)
+        # Za duże opóźnienie przy wysyłaniu na mqtt, funkcjonalność przeniesiona na Arduino.
+        #mqtt_pub.publish(client, topic_pub, tick_count)
         time.sleep(0.05)
 
 try:

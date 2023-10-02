@@ -42,7 +42,9 @@ def encoder_callback(pin_a, pin_b, topic):
                 tick_count += 1
         prev_a_state = a_state
         prev_b_state = b_state
-        mqtt_pub.publish(client, topic_pub, tick_count)
+        print(tick_count)
+        # Za duże opóźnienie przy wysyłaniu na mqtt, funkcjonalność przeniesiona na Arduino.
+        # mqtt_pub.publish(client, topic_pub, tick_count) 
         time.sleep(0.05)
 
 try:
