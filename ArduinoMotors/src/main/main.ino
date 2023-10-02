@@ -1,10 +1,15 @@
 #include <Arduino.h>
+#define ENCODER_OPTIMIZE_INTERRUPTS
+#include <Encoder.h>
 
-#define DIR_RIGHT 2
-#define PWM_R 3
+#define ENC_L_A 2
+#define ENC_R_A 3
 #define DIR_LEFT 4
-#define PWM_L 5
-
+#define PWM_L 5 
+#define PWM_R 6
+#define DIR_RIGHT 7 
+#define ENC_L_B 8
+#define ENC_R_B 9
 
 const int drift_correction = 5;
 const int PWM_step_delay = 100;
@@ -12,8 +17,13 @@ const int PWM_val_turn = 150;
 const int PWM_max = 200;
 const int PWM_step_start = 20;
 const int PWM_step_stop = 20;
+int tick_counter = 0;
 String read_now = "";
 String read_before = "";
+long positionLeft  = 0;
+long positionRight = 0;
+Encoder encLeft(ENC_L_A, ENC_L_B);
+Encoder encRight(ENC_R_A, ENC_R_B);
 
 
 void soft_start(){
@@ -68,14 +78,33 @@ void back() {
 }
 
 
-void choose_dir(String read_now) {
+int serial_execute(String read_now) {
   if (read_now == "forward") forward();
   else if (read_now == "back") back();
   else if (read_now == "left") left();
   else if (read_now == "right") right();
   else if (read_now == "stop" && (read_before == "right" or read_before == "left")) stop_now();
   else if (read_now == "stop" && (read_before == "forward" or read_before == "back")) soft_stop();
-  else return;
+  else if (read_now == "reset"){
+    encLeft.write(0);
+    encRight.write(0);
+  }
+  else return 0;
+}
+
+void read_enc(){
+  long newLeft, newRight;
+  newLeft = encLeft.read();
+  newRight = encRight.read();
+  if (newLeft != positionLeft || newRight != positionRight) {
+    Serial.print("Left = ");
+    Serial.print(newLeft);
+    Serial.print(", Right = ");
+    Serial.print(newRight);
+    Serial.println();
+    positionLeft = newLeft;
+    positionRight = newRight;
+  }
 }
 
 void setup() {
@@ -85,6 +114,10 @@ void setup() {
   pinMode(DIR_RIGHT, OUTPUT);
   pinMode(PWM_R, OUTPUT);
   pinMode(PWM_L, OUTPUT);
+  pinMode(ENC_L_A, INPUT);
+  pinMode(ENC_L_B, INPUT);
+  pinMode(ENC_R_A, INPUT);
+  pinMode(ENC_R_B, INPUT);
 }
 
 void loop() {
@@ -92,8 +125,9 @@ void loop() {
     read_now = Serial.readStringUntil('\n');
     Serial.println(read_now);
     if (read_now != read_before) {
-      choose_dir(read_now);
+      serial_execute(read_now);
     }
     read_before = read_now;
   }
+  read_enc();
 }
