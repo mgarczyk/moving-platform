@@ -17,7 +17,6 @@ except FileNotFoundError:
     print("Brak pliku konfiguracyjnego.")
     exit()
 
-# Used to scale data to fit on the screen
 max_distance = 0
 def connect_mqtt(client_id : str, broker : str, port : int ):
     def on_connect(client, userdata, flags, rc):
@@ -40,9 +39,9 @@ def distances(scan_data):
     Back=scan_data[0]
     print(f'Back: {Back}')
     return Front, Left, Right, Back
-
-#Jeżeli w dwóch iteracjach na danym indeksie jest ta sama watość to znaczy że jest to błąd i należy się tej wartości pozbyć zerując ją.
-#Optymalizacja?
+ 
+# Jeżeli w dwóch iteracjach na danym indeksie jest ta sama watość to znaczy że jest to błąd i należy się tej wartości pozbyć zerując ją. Wiązka nie wraca do lidaru ze względu na błędne odbicie.
+# Można zooptymalizować?
 def lidar_fix(scan_data, scan_data_before):
     for i in range(len(scan_data)):
         if scan_data[i] == scan_data_before[i]:
@@ -61,11 +60,6 @@ if __name__ == '__main__':
             for (_, angle, distance) in scan:
                     scan_data[min([359, floor(angle)])] = distance/10
             scan_data = lidar_fix(scan_data, scan_data_before)
-            # print("\n")
-            # print("Before:", scan_data_before[260:290])
-            # print("\n")
-            # print("Now: ", scan_data[260:290])
-            # print("\n")
             scan_data_before = copy.deepcopy(scan_data)
             scan_data = [int(i) for i in scan_data]
             mqtt_mess=f"{scan_data}"
