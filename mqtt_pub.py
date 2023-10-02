@@ -1,5 +1,16 @@
-from paho.mqtt import client as mqtt_client
+import json
 import time
+from paho.mqtt import client as mqtt_client
+
+try:
+    with open ("config.json") as config_f:
+        config = json.load(config_f)
+        BROKER = config["MQTT_BROKER"]
+        PORT = config["MQTT_PORT"]
+        config_f.close()
+except FileNotFoundError:
+    print("Brak pliku konfiguracyjnego.")
+    exit()
 
 
 def connect_mqtt(client_id : str, broker : str, port : int) -> mqtt_client:
@@ -28,15 +39,14 @@ def test_run(client_id : str, broker : str, port : int , topic):
     i = 0
     while True:
         i+=1
+        time.sleep(0.1)
         publish(client, topic, i)
 
 if __name__ == '__main__':
     client_id = "publish-test"
-    broker = 'localhost'
-    port = 8883 #on rock 1883
     topic = "mqtt/test"
     try:
-        test_run(client_id, broker, port, topic)
+        test_run(client_id, BROKER, PORT, topic)
     except KeyboardInterrupt:
         print("Connection ended")
         exit()

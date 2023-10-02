@@ -1,26 +1,26 @@
-import time
-import adafruit_tfmini
+import json
 import serial
-import periphery
-import adafruit_us100
+import adafruit_tfmini
 import mqtt_pub
-
-####Faktyczny skrypt####
-##BROKER##
-broker = 'localhost'
-port = 1883
-topic = "mqtt/liftlevel"
-client_id = f'publish-height'
-
-uart = serial.Serial("/dev/ttyS2", timeout=1)
-tfmini = adafruit_tfmini.TFmini(uart)
+try:
+    with open ("config.json") as config_f:
+        config = json.load(config_f)
+        BROKER = config["MQTT_BROKER"]
+        PORT = config["MQTT_PORT"]
+        LIFT_HEIGHT_CONSTANT = config["LIFT_HEIGHT_CONSTANT"]
+        UART_TFMINI = serial.Serial(config["TFMINI_PORT"], timeout=1)     
+        tfmini = adafruit_tfmini.TFmini(UART_TFMINI)
+        config_f.close()
+except FileNotFoundError:
+    print("Brak pliku konfiguracyjnego.")
+    exit()
 
 def height_return(tfmini):
-    height=tfmini.distance+58
+    height=tfmini.distance+LIFT_HEIGHT_CONSTANT
     return height
 
-def publisher_height():
-    client = mqtt_pub.connect_mqtt(client_id, broker, port)
+def publisher_height(topic : str, client_id : str):
+    client = mqtt_pub.connect_mqtt(client_id, BROKER, PORT)
     while True:
         try:
             height=height_return(tfmini)
@@ -30,6 +30,8 @@ def publisher_height():
             break
 
 if __name__=="__main__":
-    publisher_height()
+    topic = "mqtt/liftlevel"
+    client_id = f'publish-height'
+    publisher_height(topic, client_id)
 
 

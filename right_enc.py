@@ -1,9 +1,8 @@
 import time
-import mqtt_pub
 import json
-from periphery import GPIO
 from paho.mqtt import client as mqtt_client
-import paho.mqtt.subscribe as subscribe
+from periphery import GPIO
+import mqtt_pub
 
 try:
     with open ("config.json") as config_f:

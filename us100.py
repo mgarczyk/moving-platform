@@ -1,10 +1,10 @@
-from periphery import GPIO
-import adafruit_us100
-import mqtt_pub
 import time
 import serial
-import os
 import json 
+import adafruit_us100
+from periphery import GPIO
+import mqtt_pub
+
 
 try:
     with open ("config.json") as config_f:
@@ -33,7 +33,7 @@ def Sensors(VAR_A,VAR_B):
 
 def publisher_us100():
     client_id = "us_100"
-    topic = "mqtt/us_100"
+    topic = "mqtt/us_100_dist"
     client = mqtt_pub.connect_mqtt(client_id, BROKER, PORT)
     while True:
         try:

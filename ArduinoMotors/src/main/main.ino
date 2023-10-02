@@ -34,6 +34,12 @@ void soft_stop(){
   analogWrite(PWM_R, 0);
 }
 
+void stop_now() {
+  analogWrite(PWM_R, 0);
+  analogWrite(PWM_L, 0);
+  
+}
+
 void left() {
   digitalWrite(DIR_RIGHT,HIGH);
   digitalWrite(DIR_LEFT, LOW);
@@ -61,17 +67,14 @@ void back() {
   soft_start();
 }
 
-void stop_motors() {
-  soft_stop();
-  
-}
 
 void choose_dir(String read_now) {
   if (read_now == "forward") forward();
   else if (read_now == "back") back();
   else if (read_now == "left") left();
   else if (read_now == "right") right();
-  else if (read_now == "stop" ) stop_motors();
+  else if (read_now == "stop" && (read_before == "right" or read_before == "left")) stop_now();
+  else if (read_now == "stop" && (read_before == "forward" or read_before == "back")) soft_stop();
   else return;
 }
 

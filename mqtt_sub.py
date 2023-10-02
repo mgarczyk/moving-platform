@@ -1,6 +1,17 @@
-import random
+import json
 from paho.mqtt import client as mqtt_client
 import paho.mqtt.subscribe as subscribe
+
+try:
+    with open ("config.json") as config_f:
+        config = json.load(config_f)
+        BROKER = config["MQTT_BROKER"]
+        PORT = config["MQTT_PORT"]
+        config_f.close()
+except FileNotFoundError:
+    print("Brak pliku konfiguracyjnego.")
+    exit()
+
 
 def connect_mqtt(client_id : str, broker : str, port : int) -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
@@ -38,11 +49,9 @@ def test_run(client_id : mqtt_client, broker : str, port: int, topic: str):
     
 if __name__ == '__main__':
     client_id = "subscribe-test"
-    broker = 'localhost'
-    port = 8883 #on rock 1883
-    topic = "mqtt/steering" 
+    topic = "mqtt/test" 
     try:
-        test_run(client_id, broker, port, topic)
+        test_run(client_id, BROKER, PORT, topic)
     except KeyboardInterrupt:
         print("Connection ended")
         exit()
