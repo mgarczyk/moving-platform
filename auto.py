@@ -260,10 +260,10 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
                 logging.info(f"Obstacle length: {obstacle_len}")
                 sum_len_of_obstacle += obstacle_len
                 left_turn()  # powrot na srodek sciezki
+                forward()
                 while obstacle_width_return <= obstacle_width:
                     encoder_tick = (left_ticks+right_ticks)/2
                     obstacle_width_return = (encoder_tick/15) * math.pi * WHEEL_DIAMETER
-                    forward()
                 right_turn()
                 logging.info(f"Obstacle avoided.")
         # DRIVING WHEN THERE ARE NO OBSTACLES#
