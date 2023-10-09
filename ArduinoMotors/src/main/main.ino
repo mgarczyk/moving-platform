@@ -11,16 +11,17 @@
 #define ENC_L_B 8
 #define ENC_R_B 9
 
-
-
-
 const int drift_correction = 5;
 const int PWM_step_delay = 100;
 const int PWM_val_turn = 150;
 const int PWM_max = 200;
 const int PWM_step_start = 20;
 const int PWM_step_stop = 20;
-int tick_counter = 0;
+const int motor_constant = 48*99; //encoder PWM freq * motor transmission
+const float wheel_diameter = 0.102;
+const unsigned int send_dist_ms = 100UL;
+unsigned int time_now = millis();
+unsigned int time_send = millis();
 String read_now = "";
 String read_before = "";
 long positionLeft  = 0;
@@ -95,23 +96,27 @@ int serial_execute(String read_now) {
   else return 0;
 }
 
-void read_then_send_enc(){
-  long newLeft, newRight;
-  newLeft = encLeft.read();
-  newRight = encRight.read();
+void send_enc(long int positionLeft, long int positionRight){
+   long int avg_enc = (abs(positionLeft)+ positionRight)/2;
+   float dist = (avg_enc/motor_constant) * PI * wheel_diameter;
+   Serial.println(dist, 2);
+   time_send = millis();
+}
+
+void read_enc(){
+  long int newLeft = encLeft.read();
+  long int newRight = encRight.read();
   if (newLeft != positionLeft || newRight != positionRight) {
     positionLeft = newLeft;
     positionRight = newRight;
-    Serial.print(newLeft);
-    Serial.print(":");
-    Serial.print(newRight);
-    Serial.print("\n");
   }
+  if (time_now - time_send > send_dist_ms) send_enc(positionLeft, positionRight);
 }
 
+
 void setup() {
-  Serial.begin(115200);
   Serial.flush();
+  Serial.begin(115200);
   pinMode(DIR_LEFT, OUTPUT);
   pinMode(DIR_RIGHT, OUTPUT);
   pinMode(PWM_R, OUTPUT);
@@ -123,11 +128,15 @@ void setup() {
 }
 
 void loop() {
+  time_now = millis();
   if (Serial.available() > 0) {
     read_now = Serial.readStringUntil('\n');
     Serial.flush();
   }
   if (read_now != read_before) serial_execute(read_now);
   read_before = read_now;
-  read_then_send_enc();
+  read_enc();
+  
+  
+  
 }
