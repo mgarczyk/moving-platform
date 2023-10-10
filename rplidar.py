@@ -40,8 +40,11 @@ def distances(scan_data):
     print(f'Back: {Back}')
     return Front, Left, Right, Back
  
+def remove_zeroes_LIDAR(vector: list):
+    vector = [i for i in vector if i != 0]
+    return vector
+
 # Jeżeli w dwóch iteracjach na danym indeksie jest ta sama watość to znaczy że jest to błąd i należy się tej wartości pozbyć zerując ją. Wiązka nie wraca do lidaru ze względu na błędne odbicie.
-# Można zooptymalizować?
 def lidar_fix(scan_data, scan_data_before):
     for i in range(len(scan_data)):
         if scan_data[i] == scan_data_before[i]:
