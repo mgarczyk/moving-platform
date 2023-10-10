@@ -17,7 +17,7 @@ const int PWM_val_turn = 150;
 const int PWM_max = 200;
 const int PWM_step_start = 20;
 const int PWM_step_stop = 20;
-const int motor_constant = 48*99; //encoder PWM freq * motor transmission
+const float motor_constant = 4752; //encoder PWM freq * motor transmission
 const float wheel_diameter = 0.102;
 const unsigned int send_dist_ms = 100UL;
 unsigned int time_now = millis();
@@ -96,11 +96,11 @@ int serial_execute(String read_now) {
   else return 0;
 }
 
-void send_enc(long int positionLeft, long int positionRight){
-   long int avg_enc = (abs(positionLeft)+ positionRight)/2;
-   float dist = (avg_enc/motor_constant) * PI * wheel_diameter;
-   Serial.println(dist, 2);
-   time_send = millis();
+void send_dist(long int positionLeft, long int positionRight){
+  long int avg_enc = (abs(positionLeft) + positionRight)/2;
+  float dist = ((float)avg_enc)/motor_constant * PI * wheel_diameter;
+  Serial.println(dist);
+  time_send = millis();
 }
 
 void read_enc(){
@@ -110,7 +110,11 @@ void read_enc(){
     positionLeft = newLeft;
     positionRight = newRight;
   }
-  if (time_now - time_send > send_dist_ms) send_enc(positionLeft, positionRight);
+  if(time_now - time_send >= send_dist_ms){
+    send_dist(positionLeft, positionRight);
+  }
+  
+  
 }
 
 
