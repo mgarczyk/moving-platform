@@ -24,7 +24,7 @@ def publisher_height(topic : str, client_id : str):
     while True:
         try:
             height=height_return(tfmini)
-            mqtt_pub.publish(client, topic, f'Height: {height}')
+            mqtt_pub.publish(client, topic, height)
         except KeyboardInterrupt:
             print("Sensor Error")
             break
