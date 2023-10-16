@@ -11,6 +11,7 @@
 #define ENC_L_B 8
 #define ENC_R_B 9
 
+const int angle_ticks=8600;
 const int drift_correction = 5;
 const int PWM_step_delay = 100;
 const int PWM_val_turn = 150;
@@ -37,6 +38,32 @@ void soft_start(){
     delay(PWM_step_delay);
   }
 }
+
+
+void drive_correction(){
+  long int enc_diff = abs(positionLeft) - positionRight;
+  if (read_now=="forward" && enc_diff >= 500){
+      analogWrite(PWM_L, PWM_max - drift_correction);
+      analogWrite(PWM_R, PWM_max + drift_correction);
+  }else if(read_now=="forward" && enc_diff <= -500){
+      analogWrite(PWM_L, PWM_max + drift_correction);
+      analogWrite(PWM_R, PWM_max - drift_correction);
+  }
+}
+
+void angle_check(){
+  long int avg_enc = (abs(positionLeft) + positionRight)/2;
+  if (read_now=="left" && avg_enc>angle_ticks){
+    analogWrite(PWM_R, 0);
+    analogWrite(PWM_L, 0);
+  }
+  avg_enc = (abs(positionLeft) + abs(positionRight))/2;
+  if (read_now=="right" && avg_enc>angle_ticks){
+    analogWrite(PWM_R, 0);
+    analogWrite(PWM_L, 0);
+  }
+}
+
 
 void soft_stop(){
    for(int i=PWM_max; i>=1; i-=PWM_step_stop){
@@ -110,13 +137,7 @@ void read_enc(){
     positionLeft = newLeft;
     positionRight = newRight;
   }
-  if(time_now - time_send >= send_dist_ms){
-    send_dist(positionLeft, positionRight);
-  }
-  
-  
 }
-
 
 void setup() {
   Serial.flush();
@@ -140,7 +161,7 @@ void loop() {
   if (read_now != read_before) serial_execute(read_now);
   read_before = read_now;
   read_enc();
-  
-  
-  
+  if(time_now - time_send >= send_dist_ms) send_dist(positionLeft, positionRight);
+  drive_correction();
+  angle_check();
 }
