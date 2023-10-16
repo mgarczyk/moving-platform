@@ -1,8 +1,10 @@
 venv/
 bin/
-mqtt/
+__pycache__/
 .vscode/
+settings.json
+mqtt/
 lidar_data/
 camera/
-__pycache__/
-.venv/
+auto_logger.log
+ArduinoMotors/.pio
