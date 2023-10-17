@@ -166,6 +166,7 @@ def alley_measure(distance_tmp: float, DIST_BEETWEEN_MEASURES: float, next_measu
     while True:
         if liftlevel>=MEASURE_HEIGHT:
             stop_lift()
+            logging.info(f"Measurment on {distance_tmp} meter, device on {liftlevel/100} meter height.")
             break
     time.sleep(MEASURE_TIME)
     lower()
@@ -266,7 +267,6 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
         else:
             distance_tmp = distance_tmp_before_obstacle + sum_len_of_obstacles + encoder_distance()
             if distance_tmp >= next_measure_pos and is_measure == True:
-                logging.info(f"Measurment on {distance_tmp} meter, device on {liftlevel/100} meter height.")
                 next_measure_pos = alley_measure(distance_tmp, DIST_BEETWEEN_MEASURES, next_measure_pos)
 
 
