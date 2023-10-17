@@ -28,8 +28,6 @@ try:
         PORT = config["MQTT_PORT"]
         arduino = serial.Serial(config["ARDUINO_PORT"], 115200)
         arduino.reset_input_buffer()
-        # distance_tmp = 0
-        # distance_tmp_before_obstacle = 0
         liftlevel = 0
         LIDAR_forw_dist = []
         LIDAR_right_dist = []
