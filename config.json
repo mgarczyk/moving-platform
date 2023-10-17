@@ -1,10 +1,10 @@
 {
 
     "//KOMENTARZ_1" : "Parametry pomiaru - odległości [m].",
-    "ALLEY_LEN" : 4,
-    "ALLEY_WIDTH" : 0.5,
-    "SHELF_WIDTH" : 0.5,
-    "DIST_BEETWEEN_MEASURES" : 1000,
+    "ALLEY_LEN" : 9,
+    "ALLEY_WIDTH" : 1.5,
+    "SHELF_WIDTH" : 0.3,
+    "DIST_BEETWEEN_MEASURES" : 3,
     "NUMBER_OF_SHELFS" : 1,
     "START_WALL_POS" : "L",
     "MEASURE_FLAG" : 1, 
@@ -24,7 +24,7 @@
     "MUX_UART" : "/dev/ttyS4",
     "LIDAR_PORT" : "/dev/ttyUSB0",
     "TFMINI_PORT" : "/dev/ttyS2",
-    "ARDUINO_PORT" : "/dev/ttyACM1",
+    "ARDUINO_PORT" : "/dev/ttyACM0",
     "//KOMENTARZ_4" : "MQTT",
     "MQTT_BROKER" : "localhost",
     "MQTT_PORT" : 1883,

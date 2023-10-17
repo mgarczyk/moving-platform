@@ -15,7 +15,7 @@ try:
         START_WALL_POS = config["START_WALL_POS"]
         SHELF_WIDTH = config["SHELF_WIDTH"]
         ALLEY_WIDTH = config["ALLEY_WIDTH"]
-        ALLEY_LEN = config["ALLEY_LEN"]
+        ALLEY_LEN = config["ALLEY_LEN"]-1.30
         MEASURE_HEIGHT = config["MEASURE_HEIGHT"]
         MEASURE_TIME = config["MEASURE_TIME"]
         LIDAR_FORWARD_AVOIDING_DISTANCE = config["LIDAR_FORWARD_TRANSFORM"] + config["LIDAR_FORWARD_REACTION"]
@@ -28,9 +28,9 @@ try:
         PORT = config["MQTT_PORT"]
         arduino = serial.Serial(config["ARDUINO_PORT"], 115200)
         arduino.reset_input_buffer()
-        distance_tmp = 0
-        liftlevel=0
-        distance_tmp_before_obstacle = 0
+        # distance_tmp = 0
+        # distance_tmp_before_obstacle = 0
+        liftlevel = 0
         LIDAR_forw_dist = []
         LIDAR_right_dist = []
         LIDAR_left_dist = []
@@ -41,7 +41,7 @@ except FileNotFoundError:
     exit()
 
 
-# LOGGER CONFIG#
+# LOGGER CONFIG #
 FORMAT = '%(asctime)s - %(message)s'
 logging.basicConfig(filename='auto_logger.log', filemode='w',
                     level=logging.DEBUG, format=FORMAT)
@@ -49,7 +49,7 @@ logging.basicConfig(filename='auto_logger.log', filemode='w',
 
 def on_connect(client: mqtt_client, userdata, flags, rc):
     logging.info(f"Connected to broker with result code: {str(rc)}")
-    client.subscribe([("mqtt/left_ticks", 1), ("mqtt/right_ticks",1), ("mqtt/lidar", 0), ("mqtt/us_100_dist", 0)])
+    client.subscribe([("mqtt/liftlevel",1), ("mqtt/lidar", 0), ("mqtt/us_100_dist", 0)])
 
 
 def remove_zeroes_LIDAR(vector: list):
@@ -91,10 +91,8 @@ def on_message(client: mqtt_client, obj, msg):
     global LIDAR_forw_dist, LIDAR_right_dist, LIDAR_left_dist, LIDAR_back_dist,LIDAR_front_left, LIDAR_front_right, US_100_dist, liftlevel
     if msg.topic == "mqtt/liftlevel":
         liftlevel = int(msg.payload.decode('utf8'))
-        print(liftlevel)
     elif msg.topic == "mqtt/lidar":
-        LIDAR_forw_dist, LIDAR_right_dist, LIDAR_left_dist, LIDAR_back_dist, LIDAR_front_left, LIDAR_front_right = prepare_lidar_data(
-            msg.payload)
+        LIDAR_forw_dist, LIDAR_right_dist, LIDAR_left_dist, LIDAR_back_dist, LIDAR_front_left, LIDAR_front_right = prepare_lidar_data(msg.payload)
 
 def reset_encoders():                             
     arduino.write(b"reset\n") 
@@ -105,10 +103,8 @@ def forward():
 def back():
     arduino.write(b"back\n")
 
-
 def left():
     arduino.write(b"left\n")
-
 
 def right():
     arduino.write(b"right\n")
@@ -123,7 +119,6 @@ def stop_lift():
 def lower():
     DIR_LIFT.write(False)
     SET_PWM_LIFT.write(True)
-
 
 def stop():
     arduino.write(b"stop\n")
@@ -141,28 +136,29 @@ def encoder_distance():
 
 def left_turn():
     left()
-    time.sleep(2.75)
+    time.sleep(4)
     stop()
     reset_encoders()
-    time.sleep(0.1)
+    time.sleep(0.3)
 
 def right_turn():
     right()
-    time.sleep(2.75)
+    time.sleep(4)
     stop()
     reset_encoders()
-    time.sleep(0.1)
+    time.sleep(0.3)
 
 def alley_init():
     reset_encoders()
     time.sleep(0.1)
-    global distance_tmp
+    distance_tmp = 0
+    distance_tmp_before_obstacle = 0
     distance_tmp = 0
     next_measure_pos = DIST_BEETWEEN_MEASURES
     sum_len_of_obstacles = 0
     time.sleep(0.5)
     forward()
-    return distance_tmp, next_measure_pos, sum_len_of_obstacles
+    return distance_tmp, next_measure_pos, sum_len_of_obstacles, distance_tmp_before_obstacle
 
 def alley_measure(distance_tmp: float, DIST_BEETWEEN_MEASURES: float, next_measure_pos: float):
     global liftlevel
@@ -185,8 +181,7 @@ def alley_end():
     time.sleep(0.5)
 
 def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: bool):
-    distance_tmp, next_measure_pos, sum_len_of_obstacles = alley_init()
-    global distance_tmp_before_obstacle
+    distance_tmp, next_measure_pos, sum_len_of_obstacles, distance_tmp_before_obstacle = alley_init()
     while distance_tmp < distance_to_travel:
         # AVOIDING THE OBSTACLE#
         if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
@@ -196,107 +191,84 @@ def alley(distance_to_travel: float, DIST_BEETWEEN_MEASURES: float, is_measure: 
             distance_tmp_before_obstacle = distance_tmp
             stop()
             time.sleep(1)
+            # wykrycie przeszkody
             if any(dist < LIDAR_FORWARD_AVOIDING_DISTANCE for dist in LIDAR_front_right):
                 logging.info(f"Avoiding obstacle from right side.")
                 left_turn()  # skret w lewo po wykryciu przeszkody
-                time.sleep(1)
-                reset_encoders()
-                print(1)
-                time.sleep(1)
                 forward()  # jazda prosto do konca przeszkody - wolnego miejsca po prawej
                 while any(i < LIDAR_RIGHT_AVOIDING_DISTANCE for i in LIDAR_right_dist):
                     if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
-                        logging.info("Can't avoid STOP.")
+                        logging.error(f"Can't avoid STOPING on {distance_tmp_before_obstacle} meter.")
                         stop()
                         exit()
                     # droga pokonana na szerokosc
                     obstacle_width = encoder_distance()
-                    logging.info(f"Avoiding: {min(LIDAR_right_dist)}")
                     time.sleep(0.01)
-                logging.info(f"Obstacle width: {obstacle_width}")
+               # logging.info(f"Obstacle width: {obstacle_width}")
                 stop()
                 time.sleep(1)
                 right_turn()  # koniec przeszkody
-                time.sleep(1)
-                reset_encoders()
-                time.sleep(1)
                 forward()
                 time.sleep(2)
                 while any(i < LIDAR_RIGHT_AVOIDING_DISTANCE for i in LIDAR_right_dist):  # jazda na długosc
                     if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
-                        logging.error("Can't avoid STOP.")
+                        logging.error(f"Can't avoid STOPING on {distance_tmp_before_obstacle+obstacle_len} meter.")
                         stop()
                         exit()
                     obstacle_len=encoder_distance()
                 sum_len_of_obstacles += obstacle_len
-                logging.info(f"Obstacle length: {obstacle_len}")
                 stop()
                 time.sleep(1)
                 right_turn()  # powrot na srodek sciezki
-                time.sleep(1)
-                reset_encoders()
-                time.sleep(1)
                 forward()
                 while obstacle_width_return <= obstacle_width:
                     obstacle_width_return = encoder_distance()
                 stop()
                 time.sleep(1)
                 left_turn()
-                time.sleep(1)
-                reset_encoders()
-                time.sleep(1)
                 forward()
                 logging.info(f"Obstacle avoided.")
             elif any(dist < LIDAR_FORWARD_AVOIDING_DISTANCE for dist in LIDAR_front_left):
                 logging.warning(f"Avoiding obstacle from left side.")
                 right_turn()
-                time.sleep(1)
-                reset_encoders()
                 # jazda prosto do konca przeszkody - wolnego miejsca po prawej
                 forward()
                 while any(i < LIDAR_LEFT_AVOIDING_DISTANCE for i in LIDAR_left_dist):
                     if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
-                        logging.error("Can't avoid STOP.")
+                        logging.error(f"Can't avoid STOPING on {distance_tmp_before_obstacle} meter.")
                         stop()
                         exit()
                     # droga pokonana na szerokosc
                     obstacle_width = encoder_distance()
-                logging.info(f"Obstacle width: {obstacle_width}")
                 stop()
                 time.sleep(1)
                 left_turn()  # koniec przeszkody
-                time.sleep(1)
-                reset_encoders()
                 forward()   
-                time.sleep(2.5) # po tym czasie przeszkoda  będzie w polu widzenia lidaru
+                time.sleep(2) # po tym czasie przeszkoda  będzie w polu widzenia lidaru
                 while any(i < LIDAR_LEFT_AVOIDING_DISTANCE for i in LIDAR_left_dist):  # jazda na długosc
-                    print(LIDAR_forw_dist)
                     if any(i < LIDAR_FORWARD_AVOIDING_DISTANCE for i in LIDAR_forw_dist):
-                        logging.error("Can't avoid STOP.")
+                        logging.error(f"Can't avoid STOPING on {distance_tmp_before_obstacle} meter.")
                         stop()
                         exit()
                     obstacle_len = encoder_distance()
-                logging.info(f"Obstacle length: {obstacle_len}")
+                #logging.info(f"Obstacle length: {obstacle_len}")
                 sum_len_of_obstacles += obstacle_len
                 stop()
                 time.sleep(1)
                 left_turn()  # powrot na srodek sciezki    
-                time.sleep(1)
-                reset_encoders()
                 forward()
                 while obstacle_width_return <= obstacle_width:
                     obstacle_width_return = encoder_distance()
                 stop()
                 time.sleep(1)
                 right_turn()
-                time.sleep(1)
-                reset_encoders()
                 forward()
                 logging.info(f"Obstacle avoided.")
         # DRIVING WHEN THERE ARE NO OBSTACLES#
         else:
             distance_tmp = distance_tmp_before_obstacle + sum_len_of_obstacles + encoder_distance()
             if distance_tmp >= next_measure_pos and is_measure == True:
+                logging.info(f"Measurment on {distance_tmp} meter, device on {liftlevel/100} meter height.")
                 next_measure_pos = alley_measure(distance_tmp, DIST_BEETWEEN_MEASURES, next_measure_pos)
 
 
@@ -304,13 +276,13 @@ def curve(START_WALL_POS: str, SHELF_WIDTH: float, ALLEY_WIDTH: float):
     reset_encoders()
     if START_WALL_POS == 'P':
         left_turn()
-        alley(SHELF_WIDTH+ALLEY_WIDTH, 1, MEASURE_FLAG)
+        alley(SHELF_WIDTH+ALLEY_WIDTH, 1, 0)
         alley_end()
         left_turn()
         return 'L'
     elif START_WALL_POS == 'L':
         right_turn()
-        alley(SHELF_WIDTH+ALLEY_WIDTH, 1, MEASURE_FLAG)
+        alley(SHELF_WIDTH+ALLEY_WIDTH, 1, 0)
         alley_end()
         right_turn()
         return 'P'
@@ -329,6 +301,7 @@ if __name__ == '__main__':
     actual_shelf = 0
     while actual_shelf <= NUMBER_OF_SHELFS:
         try:
+            logging.info(f'-----MEASURMENT IN {actual_shelf+1} ALLEY -----')
             reset_encoders()
             time.sleep(0.1)
             alley(ALLEY_LEN, DIST_BEETWEEN_MEASURES, MEASURE_FLAG)

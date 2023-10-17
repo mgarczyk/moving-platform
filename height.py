@@ -2,6 +2,7 @@ import json
 import serial
 import adafruit_tfmini
 import mqtt_pub
+import time
 try:
     with open ("config.json") as config_f:
         config = json.load(config_f)
@@ -25,6 +26,7 @@ def publisher_height(topic : str, client_id : str):
         try:
             height=height_return(tfmini)
             mqtt_pub.publish(client, topic, height)
+            time.sleep(0.25)
         except KeyboardInterrupt:
             print("Sensor Error")
             break
@@ -33,5 +35,6 @@ if __name__=="__main__":
     topic = "mqtt/liftlevel"
     client_id = f'publish-height'
     publisher_height(topic, client_id)
+    
 
 

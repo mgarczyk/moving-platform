@@ -11,7 +11,8 @@
 #define ENC_L_B 8
 #define ENC_R_B 9
 
-const int angle_ticks=8600;
+const int angle_ticks_L=8570;
+const int angle_ticks_R=8250;
 const int drift_correction = 5;
 const int PWM_step_delay = 100;
 const int PWM_val_turn = 150;
@@ -53,12 +54,15 @@ void drive_correction(){
 
 void angle_check(){
   long int avg_enc = (abs(positionLeft) + positionRight)/2;
-  if (read_now=="left" && avg_enc>angle_ticks){
+  if (read_now=="left" && avg_enc>angle_ticks_L
+  
+  
+  ){
     analogWrite(PWM_R, 0);
     analogWrite(PWM_L, 0);
   }
   avg_enc = (abs(positionLeft) + abs(positionRight))/2;
-  if (read_now=="right" && avg_enc>angle_ticks){
+  if (read_now=="right" && avg_enc>angle_ticks_R){
     analogWrite(PWM_R, 0);
     analogWrite(PWM_L, 0);
   }
