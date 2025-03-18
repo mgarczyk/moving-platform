@@ -4,29 +4,29 @@ Projekt polega na stworzeniu autonomicznej platformy mobilnej, zdolnej do omijan
 
 ## Main components
 
-Raspberry Pi - control unit, responsible for data processing and motion management.
+Raspberry Pi - control unit, responsible for data processing and motion management. </br>
 
-Arduino - intermediary between Raspberry Pi and stepper motors.
+Arduino - intermediary between Raspberry Pi and stepper motors. </br>
 
-Stepper motors - drive the robot, controlled through Arduino.
+Stepper motors - drive the robot, controlled through Arduino. </br>
 
-LIDAR - a system that scans the environment to detect obstacles.
+LIDAR - a system that scans the environment to detect obstacles. </br>
 
-Power supply - suitable power modules for Raspberry Pi, Arduino and motors.
+Power supply - suitable power modules for Raspberry Pi, Arduino and motors. </br>
 
 ## Software
 
-Python – główny język programowania używany do przetwarzania danych z LIDAR-a i sterowania ruchem robota.</br>
+Python - the main programming language used to process LIDAR data and control the robot's movement. </br>
 
-Arduino (C++) - software responsible for controlling stepper motors.
+Arduino (C++) - software responsible for controlling stepper motors. </br>
 
 ## Functionality
-Analysis of the environment - LIDAR collects data about obstacles and transmits it to the Raspberry Pi.
+Analysis of the environment - LIDAR collects data about obstacles and transmits it to the Raspberry Pi. </br>
 
-Data processing - Python scripts analyze the data and make route decisions.
+Data processing - Python scripts analyze the data and make route decisions. </br>
 
-Motion control - the Raspberry Pi sends commands to the Arduino, which controls the stepper motors.
+Motion control - the Raspberry Pi sends commands to the Arduino, which controls the stepper motors. </br>
 
-Obstacle avoidance - the robot detects obstacles and corrects the route to avoid them.
+Obstacle avoidance - the robot detects obstacles and corrects the route to avoid them. </br>
 
-Movement over a specified distance - the route can be programmed based on set parameters.
+Movement over a specified distance - the route can be programmed based on set parameters. </br>
