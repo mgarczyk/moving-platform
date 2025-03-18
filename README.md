@@ -1,6 +1,6 @@
 # Project description
 
-Projekt polega na stworzeniu autonomicznej platformy mobilnej, zdolnej do omijania przeszkód oraz przemieszczania się na określoną odległość w zadanym kierunku. Robot wykorzystuje technologię LIDAR do detekcji przeszkód i analizowania otoczenia.
+The project involves the creation of an autonomous mobile platform capable of avoiding obstacles and moving a specified distance in a set direction. The robot uses LIDAR technology to detect obstacles and analyze its surroundings.
 
 ## Main components
 
