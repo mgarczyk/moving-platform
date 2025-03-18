@@ -1,33 +1,32 @@
-# Opis projektu
+# Project description
 
 Projekt polega na stworzeniu autonomicznej platformy mobilnej, zdolnej do omijania przeszkód oraz przemieszczania się na określoną odległość w zadanym kierunku. Robot wykorzystuje technologię LIDAR do detekcji przeszkód i analizowania otoczenia.
 
-## Główne komponenty
+## Main components
 
-Raspberry Pi – jednostka sterująca, odpowiedzialna za przetwarzanie danych i zarządzanie ruchem.</br>
+Raspberry Pi - control unit, responsible for data processing and motion management.
 
-Arduino – pośrednik między Raspberry Pi a silnikami krokowymi.</br>
+Arduino - intermediary between Raspberry Pi and stepper motors.
 
-Silniki krokowe – napęd robota, sterowane poprzez Arduino.</br>
+Stepper motors - drive the robot, controlled through Arduino.
 
-LIDAR – system skanujący otoczenie w celu wykrywania przeszkód.</br>
+LIDAR - a system that scans the environment to detect obstacles.
 
-Zasilanie – odpowiednie moduły zasilające dla Raspberry Pi, Arduino oraz silników.</br>
+Power supply - suitable power modules for Raspberry Pi, Arduino and motors.
 
-## Oprogramowanie
+## Software
 
 Python – główny język programowania używany do przetwarzania danych z LIDAR-a i sterowania ruchem robota.</br>
 
-Arduino (C++) – oprogramowanie odpowiedzialne za sterowanie silnikami krokowymi.</br>
+Arduino (C++) - software responsible for controlling stepper motors.
 
-## Funkcjonalność
+## Functionality
+Analysis of the environment - LIDAR collects data about obstacles and transmits it to the Raspberry Pi.
 
-Analiza otoczenia – LIDAR zbiera dane o przeszkodach i przekazuje je do Raspberry Pi.</br>
+Data processing - Python scripts analyze the data and make route decisions.
 
-Przetwarzanie danych – skrypty w Pythonie analizują dane i podejmują decyzję o trasie.</br>
+Motion control - the Raspberry Pi sends commands to the Arduino, which controls the stepper motors.
 
-Sterowanie ruchem – Raspberry Pi wysyła komendy do Arduino, które steruje silnikami krokowymi.</br>
+Obstacle avoidance - the robot detects obstacles and corrects the route to avoid them.
 
-Omijanie przeszkód – robot wykrywa przeszkody i koryguje trasę, aby ich uniknąć.</br>
-
-Przemieszczanie na określoną odległość – możliwość zaprogramowania trasy na podstawie zadanych parametrów.</br>
+Movement over a specified distance - the route can be programmed based on set parameters.
